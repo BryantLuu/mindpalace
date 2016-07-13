@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07. Quicksort</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><ul>
+<li>In-place</li>
+<li>Worst case <script type="math/tex" id="MathJax-Element-431">\Theta(n^2)</script></li>
+<li>Expected case <script type="math/tex" id="MathJax-Element-432">\Theta(n log(n))</script></li>
+<li>small constant factors</li>
+</ul>
+
+
+
+<h1 id="description">Description</h1>
+
+<ul>
+<li><strong>Divide</strong>: Given array <script type="math/tex" id="MathJax-Element-433">A[p..r]</script>, partition into two (possibly empty) subarrays <script type="math/tex" id="MathJax-Element-434">A[p..q-1]</script>, <script type="math/tex" id="MathJax-Element-435">A[q + q..r]</script>. s.t <script type="math/tex" id="MathJax-Element-436">A[p..q-1] \le A[q]</script> and <script type="math/tex" id="MathJax-Element-437">A[q + 1.. r] > A[q]</script></li>
+<li><strong>Conquer</strong>: Sort-subarrays with recursive calls to quicksort</li>
+<li><strong>Combine</strong>: No need.</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">quicksort</span>(<span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">int</span> p, <span class="hljs-keyword">int</span> r)
+{
+    <span class="hljs-keyword">if</span> (p &lt; r) {
+        q = partition(A, p, r);
+        quicksort(A, p, q - <span class="hljs-number">1</span>);
+        quicksort(A, q + <span class="hljs-number">1</span>, r);
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">partition</span>(<span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">int</span> p, <span class="hljs-keyword">int</span> r)
+{
+    <span class="hljs-keyword">double</span> x = A[r];
+    <span class="hljs-keyword">int</span> i = p - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = p; j &lt; r - <span class="hljs-number">1</span>; j++)
+    {
+        <span class="hljs-keyword">if</span> (A[j] &lt;= x) {
+            i++;
+            swap(A, i , j);
+        }
+    }
+    swap(A[i + <span class="hljs-number">1</span>], A[r]);
+
+    <span class="hljs-keyword">return</span> i + <span class="hljs-number">1</span>;
+}</code></pre>
+
+<p><strong>Loop Invariant</strong> <br>
+1. If <script type="math/tex" id="MathJax-Element-438">p \le k \le i</script>, then <script type="math/tex" id="MathJax-Element-439">A[k] \le x</script> <br>
+2. If <script type="math/tex" id="MathJax-Element-440">i + 1 \le k \le j - 1</script> then <script type="math/tex" id="MathJax-Element-441">A[k] > x</script> <br>
+3. If <script type="math/tex" id="MathJax-Element-442">k = r</script>, then <script type="math/tex" id="MathJax-Element-443">A[k] = x</script></p>
+
+<p>Takes <script type="math/tex" id="MathJax-Element-444">\Theta(n)</script> time</p>
+
+
+
+<h2 id="performance">Performance</h2>
+
+<p>Dependent on whether partitioning is balanced or not.</p>
+
+
+
+<h3 id="worst-case-partitioning">Worst Case Partitioning</h3>
+
+<p>Selects max or min value as pivot. Partitioning costs <script type="math/tex" id="MathJax-Element-445">\Theta(n)</script> time, gets invoked <script type="math/tex" id="MathJax-Element-446">O(n)</script> Times. <br>
+Happens when array is already sorted (without randomizing the partition).</p>
+
+
+
+<h2 id="best-case-partitioning">Best Case Partitioning</h2>
+
+<p>Most even split. <script type="math/tex" id="MathJax-Element-447">\Theta(n log(n))</script>.</p>
+
+<p><script type="math/tex" id="MathJax-Element-448">O (n log(n))</script> when split is at least a constant proportion</p>
+
+
+
+<h1 id="randomized-quicksort">Randomized Quicksort</h1>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">randomizedParititon</span>(<span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">int</span> p, <span class="hljs-keyword">int</span> r)
+{
+    <span class="hljs-keyword">int</span> i = random(p, r);
+    swap(A, r, i );
+    <span class="hljs-keyword">return</span> partition(A, p, r);
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">randomizedQuickSort</span>(<span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">int</span> p, <span class="hljs-keyword">int</span> r)
+{
+    <span class="hljs-keyword">if</span> (q &lt; r) {
+        q = randomizedPartition(A, p, r);
+        randomizedQuickSort(A, p, q - <span class="hljs-number">1</span>);
+        randomizedQuicksort(A, q + <span class="hljs-number">1</span>, r);
+    }
+}</code></pre>
+
+
+
+<h1 id="analysis">Analysis</h1>
+
+<p>Worst case <script type="math/tex" id="MathJax-Element-449">\Theta(n^2)</script>, expected/best case <script type="math/tex" id="MathJax-Element-450">O(n log(n))</script></p></div></body>
+</html>

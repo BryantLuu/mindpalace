@@ -1,0 +1,9 @@
+#Asymptotic Notation
+
++ $\Theta (g(n)) = \{f(n) : \exists$ positive constants $c_1, c_2,$ and $n_0$ s.t. $0 \le c_1 g(n) \le 		f(n) \le c_2g(n)$ for all $n \ge n_0 \}$
++ $\Omega(g(n)) = \{f(n) : \exists$ positive constants $c$ and $n_0$ s.t. $0 \le c g(n) \le 		f(n)$ for all $n \ge n_0 \}$
++  $O(g(n)) = \{f(n) : \exists$ positive constants $c$ and $n_0$ s.t. $0  \le 		f(n) \le cg(n)$ for all $n \ge n_0 \}$
+
+##Asymptotically Loose bounds
++ $\omega(g(n)) = \{f(n) :$ for any positive constant $c > 0$, $\exists$ positive constant $n_0$ s.t. $0 \le cg(n) \le 		f(n)$ for all $n \ge n_0 \}$
++  $o(g(n)) = \{f(n) : $ for any positive constant $c > 0$, $\exists$ positive constant  $n_0$ s.t. $0  \le 		f(n) \le cg(n)$ for all $n \ge n_0 \}$

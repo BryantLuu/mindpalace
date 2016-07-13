@@ -1,0 +1,170 @@
+#Binary Search Trees
+
+Operations take time proportional to height of the tree for complete binary tree $\Theta(lg\ n)$.  Not balanced then can have $\Theta(n)$ time.
+
+##Details
+Linked data structure. each node is an object.
+
++ $key$
++ satellite data
++ Attributes
+	+ left
+	+ right
+	+ parent
+
+**binary-search-tree property**
+
+If $y$ is in the left subtree as $x.key$, $y.key \le x.key$. If $y$ is in the right subtree as $y.key \ge x.key$.
+
+**Inorder Tree Traversal**
+prints keys in sorted order
+
+```java
+public void printTreeInorder(Node x) {
+	if (x != null) {
+		printTreeInorder(x.left);
+		System.out.println(x.key);
+		printTreeInorder(x.right);
+	}
+}
+```
+
+**Preorder Tree Walk** - prints root before values of subtrees
+**Postorder Tree Walk** - prints root after values of subtrees
+
+##Querying a binary search tree
+Can support SEARCH, MINIMUM MAXIMUM, SUCCESSOR, PREDECESSOR in $O(h)$ time where $h$ is height.
+
+```java
+public Node searchTree(Node x, int key) {
+	if (x == null || key == x.key) {
+		return x;
+	}
+
+	if (key < x.key) {
+		return searchTree(x.left, key);
+	} else {
+		return searcHTree(x.right, key);
+	}
+}
+
+public Node iterativeSearchTree(Node x, int key) {
+	while (x != null && key != x.key) {
+		if (key < x.key) {
+			x = x.left;
+		} else {
+			x = x.right;
+		}
+	}
+	return x;
+}
+
+public Node treeMinimum(Node x) {
+	while (x.left != null) {
+		x = x.left;
+	}
+	return x;
+}
+
+public Node treeMaximum(Node x) {
+	while (x.right != null) {
+		x = x.right;
+	}
+	return x;
+}
+```
+
+**Successor and predecessor**
+
+If all keys are distinct, then successor to $x$ is the node with smallest key greater than $x.key$.
+
+```java 
+public Node treeSucessor(Node x) {
+	if (x.right != null) {
+		return treeMinimum(x.right);
+	}
+	
+	Node y = x.parent;
+
+	while (y != null && x == y.right) {
+		x = y;
+		y = y.p;
+	}
+	
+	return y;
+}
+```
+
+Find node who is the left child of it's parent, then return the parent.
+
+##Insertion and deletion
+
+```java
+public void treeInsert(Tree T, Node z) {
+	Node y = null;
+	Node x = T.root;
+
+	while (x != null) {
+		y = x;
+		if (z.key < x.key) {
+			x = x.left;
+		} else {
+			x = x.right;
+		}
+		z.p = y;
+	}
+	if (y == null) {
+		T.root = z;
+	} else if (z.key < y.key) {
+		y.left = z;
+	} else {
+		y.right = z;
+	}
+}
+```
+
+###Deletion
+
+Three Cases
+
++ $z$ has no children, then delete.
++ One child, then update the child's parent to z's parent.
++ Two child, find z's successor y, then have $y$ take $z$'s place
+
+```java
+public void transplant(Tree T, Node u, Node v) {
+	if (u.p == null) {
+		T.root = v;
+	} else if (u == u.p.left) {
+		u.p.left = v;
+	} else {
+		u.p.right = v;
+	}
+	
+	if (v != null) {
+		v.p = u.p;
+	}
+}
+
+public void treeDelete(Tree T, Node z) {
+	if (z.left == null) {
+		transplant(T, z, z.right);
+	} else if (z.right == null) {
+		transplant(T, z, z.left);
+	} else {
+		y = treeMinimum(z.right);
+		if (y.p != z) {
+			transplant(T, y, y.right);
+			y.right = z.right;
+			y.right.p = y;
+		}
+		transplant(T, z, y);
+		y.left = z.left;
+		y.left.p = y;
+	}
+}
+```
+
+##Randomly built binary search trees
+
+Look into this if I have time.

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08. Linear Time Sorting</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><p>Any comparison sorts have <script type="math/tex" id="MathJax-Element-451">\Omega(n log(n))</script> worst case.</p>
+
+
+
+<h1 id="counting-sort">Counting Sort</h1>
+
+<p><strong>Assumption</strong>: each of n input elements is an integer in the range <script type="math/tex" id="MathJax-Element-452">0..k</script>. </p>
+
+<p>Requires two other arrays <script type="math/tex" id="MathJax-Element-453">B[1..n]</script> to hold sorted result, <script type="math/tex" id="MathJax-Element-454">C[0..k]</script> for temp storage.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs ">    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">double</span>[] <span class="hljs-title">countingSort</span>(<span class="hljs-keyword">int</span>[] A, <span class="hljs-keyword">int</span> k)
+    {
+        <span class="hljs-keyword">int</span>[] C = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[k];
+
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>; j &lt; A.length; j++) {
+            C[A[j] - <span class="hljs-number">1</span>]++;
+        }
+
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; k - <span class="hljs-number">1</span>; k++) {
+            C[i] = C[i] + C[i - <span class="hljs-number">1</span>];
+        }
+
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = A.length - <span class="hljs-number">1</span>; j &gt; <span class="hljs-number">0</span>; j--) {
+            B[C[A[j]] = A[j];
+            C[A[j]] = C[A[j]] - <span class="hljs-number">1</span>;
+        }
+    }</code></pre>
+
+<ul>
+<li>When <script type="math/tex" id="MathJax-Element-455">k = O(n)</script>, the sort runs in <script type="math/tex" id="MathJax-Element-456">\Theta(n)</script> time otherwise <script type="math/tex" id="MathJax-Element-457">\Theta(k + n)</script></li>
+<li>Stable sort</li>
+</ul>
+
+
+
+<h1 id="radix-sort">Radix Sort</h1>
+
+<p>Sorts least significant digit first. Then 2nd most least sig. Stable.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">radix</span>(<span class="hljs-keyword">int</span>[] A, <span class="hljs-keyword">int</span> d)
+{
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; d; i++) {
+        stableSort(A, i);
+    }
+}</code></pre>
+
+<p>Given <script type="math/tex" id="MathJax-Element-458">n</script>, <script type="math/tex" id="MathJax-Element-459">d</script>-digit numbers in which each digit can take on up to <script type="math/tex" id="MathJax-Element-460">k</script> possible values, Radix sorts in <script type="math/tex" id="MathJax-Element-461">\Theta(d (n + k))</script> time if stable sort takes <script type="math/tex" id="MathJax-Element-462">\Theta(n + k)</script> time.</p>
+
+
+
+<h1 id="bucket-sort">Bucket Sort</h1>
+
+<ul>
+<li>Assumes that the input is drawn from a uniform distribution on <script type="math/tex" id="MathJax-Element-463">[0, 1)</script></li>
+<li>Given <script type="math/tex" id="MathJax-Element-464">n</script> number from above distribution, split <script type="math/tex" id="MathJax-Element-465">[0, 1)</script> into <script type="math/tex" id="MathJax-Element-466">n</script> equal sized buckets.</li>
+<li>Need auxiliary array <script type="math/tex" id="MathJax-Element-467">B[0...n-1]</script> of linked lists.</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">bucketSort</span>(<span class="hljs-keyword">double</span>[] A)
+{
+    ArrayList&lt;LinkedList&lt;Double&gt;&gt; B = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;(A.length);
+    <span class="hljs-keyword">int</span> n = A.length;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {
+        B.put(i, <span class="hljs-keyword">new</span> LinkedList&lt;Double&gt;());
+    }
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {
+        B[(<span class="hljs-keyword">int</span>) n * A[i]].add(A[i]);
+    }
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {
+        insertionSort(B.get(i));
+    }
+
+    LinkedList&lt;<span class="hljs-keyword">double</span>&gt; aSorted = <span class="hljs-keyword">new</span> LinkedList&lt;&gt;(n);
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++) {
+        aSorted.extend(B.get(i));
+    }
+}</code></pre></div></body>
+</html>

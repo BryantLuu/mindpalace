@@ -1,0 +1,74 @@
+Any comparison sorts have $\Omega(n log(n))$ worst case.
+#Counting Sort
+**Assumption**: each of n input elements is an integer in the range $0..k$. 
+
+Requires two other arrays $B[1..n]$ to hold sorted result, $C[0..k]$ for temp storage.
+
+```java
+	public static double[] countingSort(int[] A, int k)
+	{
+		int[] C = new int[k];
+		
+		for (int j = 0; j < A.length; j++) {
+			C[A[j] - 1]++;
+		}
+		
+		for (int i = 0; i < k - 1; k++) {
+			C[i] = C[i] + C[i - 1];
+		}
+		
+		for (int j = A.length - 1; j > 0; j--) {
+			B[C[A[j]] = A[j];
+			C[A[j]] = C[A[j]] - 1;
+		}
+	}
+```
+
++ When $k = O(n)$, the sort runs in $\Theta(n)$ time otherwise $\Theta(k + n)$
++ Stable sort
+
+#Radix Sort
+
+Sorts least significant digit first. Then 2nd most least sig. Stable.
+
+```java
+public static void radix(int[] A, int d)
+{
+	for (int i = 0; i < d; i++) {
+		stableSort(A, i);
+	}
+}
+```
+
+Given $n$, $d$-digit numbers in which each digit can take on up to $k$ possible values, Radix sorts in $\Theta(d (n + k))$ time if stable sort takes $\Theta(n + k)$ time.
+
+#Bucket Sort
+
++ Assumes that the input is drawn from a uniform distribution on $[0, 1)$
++ Given $n$ number from above distribution, split $[0, 1)$ into $n$ equal sized buckets.
++ Need auxiliary array $B[0...n-1]$ of linked lists.
+
+```java
+public void bucketSort(double[] A)
+{
+	ArrayList<LinkedList<Double>> B = new ArrayList<>(A.length);
+	int n = A.length;
+	for (int i = 0; i < n; i++) {
+		B.put(i, new LinkedList<Double>());
+	}
+	
+	for (int i = 0; i < n; i++) {
+		B[(int) n * A[i]].add(A[i]);
+	}
+	
+	for (int i = 0; i < n; i++) {
+		insertionSort(B.get(i));
+	}
+	
+	LinkedList<double> aSorted = new LinkedList<>(n);
+
+	for (int i = 0; i < n; i++) {
+		aSorted.extend(B.get(i));
+	}
+}
+```

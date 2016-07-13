@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06.a Sorting</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="sorting-algorithms">Sorting Algorithms</h1>
+
+<p><strong>Comparison sorts</strong></p>
+
+<ul>
+<li>Insertion Sort: <script type="math/tex" id="MathJax-Element-412">\Theta(n^2)</script>, in place, stable</li>
+<li>Merge Sort: <script type="math/tex" id="MathJax-Element-413">\Theta(n log(n))</script>, not in place, stable</li>
+<li>Heapsort: <script type="math/tex" id="MathJax-Element-414">O(n log(n))</script>, in place, not stable</li>
+<li>Quicksort: worst-case <script type="math/tex" id="MathJax-Element-415">\Theta(n^2)</script>, expected <script type="math/tex" id="MathJax-Element-416">\Theta(n log(n))</script>, generally outperforms heapsort in practice (small constant factors), not stable</li>
+<li>Has worst case lower bound of <script type="math/tex" id="MathJax-Element-417">\Omega( n log(n))</script></li>
+<li>Bubble-sort: <script type="math/tex" id="MathJax-Element-418">\Theta(n^2)</script>, stable, inplace</li>
+</ul>
+
+<p><strong>Non-comparison sorts</strong></p>
+
+<ul>
+<li>Counting sort: numbers range 0-k, can sort in <script type="math/tex" id="MathJax-Element-419">\Theta(k + n)</script> by using array, stable</li>
+<li>Radix: given n integers, each integer with d digits, each digit can take k possible values, can sort in <script type="math/tex" id="MathJax-Element-420">\Theta(d(n+k))</script> time. If <script type="math/tex" id="MathJax-Element-421">d</script> is constant and <script type="math/tex" id="MathJax-Element-422">k</script> is <script type="math/tex" id="MathJax-Element-423">\Theta(n)</script>, runs in <script type="math/tex" id="MathJax-Element-424">\Theta(n)</script> time, stable</li>
+<li>Bucket sort: need distribution of numbers, can sort <script type="math/tex" id="MathJax-Element-425">n</script> real numbers uniformly distributed in [0, 1) in average case <script type="math/tex" id="MathJax-Element-426">\Theta(n)</script> time, worst case is <script type="math/tex" id="MathJax-Element-427">\Theta(n^2)</script>, stable</li>
+</ul>
+
+<p><strong>Order Statistics</strong> <br>
+<script type="math/tex" id="MathJax-Element-428">i</script>th order statistic of a set of <script type="math/tex" id="MathJax-Element-429">n</script> numbers is <script type="math/tex" id="MathJax-Element-430">i</script>th smallest number in set.</p></div></body>
+</html>

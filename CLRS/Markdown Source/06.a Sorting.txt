@@ -1,0 +1,22 @@
+
+
+#Sorting Algorithms
+
+**Comparison sorts**
+
++ Insertion Sort: $\Theta(n^2)$, in place, stable
++ Merge Sort: $\Theta(n log(n))$, not in place, stable
++ Heapsort: $O(n log(n))$, in place, not stable
++ Quicksort: worst-case $\Theta(n^2)$, expected $\Theta(n log(n))$, generally outperforms heapsort in practice (small constant factors), not stable
++ Has worst case lower bound of $\Omega( n log(n))$
++ Bubble-sort: $\Theta(n^2)$, stable, inplace
+
+**Non-comparison sorts**
+
++ Counting sort: numbers range 0-k, can sort in $\Theta(k + n)$ by using array, stable
++ Radix: given n integers, each integer with d digits, each digit can take k possible values, can sort in $\Theta(d(n+k))$ time. If $d$ is constant and $k$ is $\Theta(n)$, runs in $\Theta(n)$ time, stable
++ Bucket sort: need distribution of numbers, can sort $n$ real numbers uniformly distributed in [0, 1) in average case $\Theta(n)$ time, worst case is $\Theta(n^2)$, stable
+
+**Order Statistics**
+$i$th order statistic of a set of $n$ numbers is $i$th smallest number in set.
+

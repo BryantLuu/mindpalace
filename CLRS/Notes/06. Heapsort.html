@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06. Heapsort</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><ul>
+<li>In place</li>
+<li><script type="math/tex" id="MathJax-Element-384">O(n lg(n))</script></li>
+<li>Uses a heap</li>
+</ul>
+
+
+
+<h1 id="heaps">Heaps</h1>
+
+
+
+<h2 id="general-binary">General (Binary)</h2>
+
+<ul>
+<li>Create <script type="math/tex" id="MathJax-Element-385">O(n)</script></li>
+<li>Insert: <script type="math/tex" id="MathJax-Element-386">\Theta(log (n))</script></li>
+<li>Increase-key: <script type="math/tex" id="MathJax-Element-387">\Theta(log(n))</script></li>
+<li>Decrease-key: <script type="math/tex" id="MathJax-Element-388">\Theta(log(n))</script></li>
+<li>Delete-max: <script type="math/tex" id="MathJax-Element-389">\Theta(log(n))</script></li>
+<li>Get max: <script type="math/tex" id="MathJax-Element-390">\Theta(1)</script></li>
+<li>merge: <script type="math/tex" id="MathJax-Element-391">\Theta(m log(n + m))</script></li>
+<li>Delete <script type="math/tex" id="MathJax-Element-392">\Theta(log(n))</script></li>
+</ul>
+
+
+
+<h2 id="binary-heap">Binary heap</h2>
+
+<ul>
+<li>A nearly complete binary tree</li>
+<li>Completey filled except the lowest level</li>
+<li>Can be represented as an Array A</li>
+<li>Each node corresponds to a element of the array</li>
+<li><strong>Attributes</strong> <br>
+<ul><li>length: number of elements in the array</li>
+<li>heap-size: how many elements in the heap that are stored within array <br>
+<ul><li><script type="math/tex" id="MathJax-Element-393">0 \le heap-size \le length</script></li></ul></li>
+<li>As a Tree <br>
+<ul><li>Root of tree is A[0].</li>
+<li><strong>height</strong> of node: number of edgest from node to a leaf.</li>
+<li><strong>height</strong> of tree:  height of root ( <script type="math/tex" id="MathJax-Element-394">\Theta(log(n))</script>)</li></ul></li></ul></li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getParentIndex</span>(<span class="hljs-keyword">int</span> i)
+{
+    <span class="hljs-keyword">return</span> i/<span class="hljs-number">2</span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getLeftChildIndex</span>(<span class="hljs-keyword">int</span> i)
+{
+    <span class="hljs-keyword">return</span> <span class="hljs-number">2</span> * i;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getRightChildIndex</span>(<span class="hljs-keyword">int</span> i)
+{
+    <span class="hljs-keyword">return</span> <span class="hljs-number">2</span> * i + <span class="hljs-number">1</span>;
+}</code></pre>
+
+<p><strong>Two types of Binary Heaps</strong> <br>
+1. Max-heap <br>
+    + max-heap property: <script type="math/tex" id="MathJax-Element-395">A[getParentIndex(i)] \ge A[i]</script> <br>
+    + Largest element stored at the root <br>
+    + used for heap sort <br>
+2. Min-heap <br>
+    + min-heap property <script type="math/tex" id="MathJax-Element-396">A[getParentIndex(i)] \le A[i]</script> <br>
+    + smallest element is at root. <br>
+    + used for priority queues</p>
+
+<p><strong>Operations</strong> <br>
++ Max-heapify: <script type="math/tex" id="MathJax-Element-397">O(log n)</script> <br>
++ Build-Max_heap: <script type="math/tex" id="MathJax-Element-398">O(n)</script> build heap from unordered input array <br>
++ Heapsort: <script type="math/tex" id="MathJax-Element-399">O(n lg(n))</script> sorts array in place <br>
++  Max-heap-insert, heap-extract-max, heap-increase-key, heap-maximum: <br>
+    + <script type="math/tex" id="MathJax-Element-400">O(log(n))</script> - allows implementation of priority queue</p>
+
+
+
+<h2 id="maintaining-heap-property">Maintaining Heap Property</h2>
+
+
+
+<h3 id="max-heapify">Max-heapify</h3>
+
+<p>Takes <script type="math/tex" id="MathJax-Element-401">O(log (n))</script></p>
+
+<p><strong>Input</strong>: Array A, index i. <br>
+<strong>Conditions</strong>: leftChild(i), rightChild(i) are root nodes  of max-heaps. <script type="math/tex" id="MathJax-Element-402">A[i]</script> might be smaller than it children. Allows <script type="math/tex" id="MathJax-Element-403">A[i]</script> to float down to its correct place.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">maxHeapify</span>(<span class="hljs-keyword">int</span>[] A, <span class="hljs-keyword">int</span> i)
+{
+    <span class="hljs-keyword">int</span> l = getLeftChildIndex(i);
+    <span class="hljs-keyword">int</span> r = getRightChildIndex(i);
+    <span class="hljs-keyword">int</span> largest = i;
+
+    <span class="hljs-keyword">if</span> (l &lt;= A.length &amp;&amp; A[l] &gt; A[i]) {
+        largest = l;
+    }
+
+    <span class="hljs-keyword">if</span> (r &lt;= A.length &amp;&amp; A[r] &gt; A[largest]) {
+        largest = r;
+    }
+
+    <span class="hljs-keyword">if</span> (largest != i) {
+        <span class="hljs-keyword">double</span> t = A[i];
+        A[i] = A[largest];
+        A[largest] = t;
+
+        maxHeapify(A, largest);
+    }
+}</code></pre>
+
+
+
+<h2 id="building-a-heap">Building a heap</h2>
+
+<p><strong>Inputs</strong>: Array A</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">buildMaxHeap</span>(A)
+{
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = A.length/<span class="hljs-number">2</span>; i &gt; <span class="hljs-number">0</span>; i--) {
+        maxHeapify(A, i);
+    }
+}</code></pre>
+
+<p><script type="math/tex" id="MathJax-Element-404">O(n)</script> Time. Naive analysis shows <script type="math/tex" id="MathJax-Element-405">O(n lg(n))</script>, but can take advantage of the height of each heap at every iteration.</p>
+
+
+
+<h2 id="heapsort">Heapsort</h2>
+
+<p><strong>Steps</strong> <br>
+1. Build-Max-Heap <br>
+2. Switch A[0] with A[heapSize-1] <br>
+3. heapSize = heapSize - 1 <br>
+4. maxHeapify <br>
+4. if heapSize = 0; break else go to 2.</p>
+
+<p>Takes <script type="math/tex" id="MathJax-Element-406">O(n log (n))</script> since <script type="math/tex" id="MathJax-Element-407">n  - 1</script> executions of <script type="math/tex" id="MathJax-Element-408">O(log(n))</script> (maxheapfiy).</p>
+
+
+
+<h2 id="priority-queues">Priority Queues</h2>
+
+<p><strong>Definition</strong>: a data structure for maintaining a set S of elements, each associated with a key.</p>
+
+<p><strong>Operation</strong>: <br>
++ <strong>Insert(x)</strong>: insert the element <script type="math/tex" id="MathJax-Element-409">x</script> into set <br>
++ <strong>Maximum()</strong>: returns the element with largest key <br>
++ <strong>Extract-Max(x, k)</strong>: removes and returns the element with largest key <br>
++ <strong>Increase-Key(x, k)</strong>: increase element <script type="math/tex" id="MathJax-Element-410">x</script>’s key to new value <script type="math/tex" id="MathJax-Element-411">k</script></p>
+
+<p>Can use a max-heap to implement this.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">heapMaximum</span>(<span class="hljs-keyword">double</span>[] A)
+{
+    <span class="hljs-keyword">return</span> A[<span class="hljs-number">0</span>];
+}
+
+<span class="hljs-comment">//Log(n)</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> heap-Extract-<span class="hljs-title">Max</span>(<span class="hljs-keyword">double</span>[] A)
+{
+    <span class="hljs-keyword">assert</span> A.heapsize &gt; <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">double</span> max = A[<span class="hljs-number">0</span>];
+
+    A[<span class="hljs-number">0</span>] = A[A.heapsize];
+    A.heapsize--;
+    maxHeapify(A,<span class="hljs-number">0</span>);
+
+    <span class="hljs-keyword">return</span> max;
+}
+
+<span class="hljs-comment">//Log(n)</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">increaseKey</span>(<span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">int</span> i, <span class="hljs-keyword">double</span> key)
+{
+    <span class="hljs-keyword">assert</span> key &gt;= A[i];
+
+    A[i] = key;
+    <span class="hljs-keyword">while</span> (i &gt; <span class="hljs-number">1</span> &amp;&amp; A[getParentIndex(i)] &lt; A[i]) {
+        <span class="hljs-keyword">double</span> t = A[i];
+        A[i] = A[getParentIndex(i)];
+        A[getParentIndex(i)] = t;
+        i = getParentIndex(i);
+    }
+}
+
+<span class="hljs-comment">//Log(n)</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">maxHeapInsert</span>(<span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">double</span> key)
+{
+    A.heapSize++;
+    <span class="hljs-comment">//Not Necessary</span>
+    A[A.heapSize] = Double.MIN_VALUE;
+    heapIncreaseKey(A, A.heapSize, key);
+}</code></pre>
+
+<p>Arbitary delete - swap node with last one, run maxheapify on subheap <br>
+Decrease value - change value, run maxheapify on subheap</p></div></body>
+</html>

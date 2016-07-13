@@ -1,0 +1,145 @@
+<h1 id="chapter-1">Chapter 1</h1>
+
+
+
+<h2 id="rest-what-you-didnt-know">REST - What You Didn’t Know</h2>
+
+
+
+<h3 id="topics">Topics</h3>
+
+<ul>
+<li>A brief history of REST</li>
+<li>REST with HTTP</li>
+<li>RESTFUL versus SOAP-based Services</li>
+<li>Taking advantage of existing infrastructure</li>
+</ul>
+
+
+
+<h3 id="principle-1-everything-is-a-resource">Principle 1 - everything is a resource</h3>
+
+<p>Data is a specific format, not a file. image/jpeg, video/mpg, text/html. </p>
+
+
+
+<h3 id="principle-2-each-resource-is-identifable-by-a-unique-identifier">Principle 2 - each resource is identifable by a unique identifier</h3>
+
+<p>URI keeps data self-descriptive. Make it human-readable. Examples:</p>
+
+<ul>
+<li><a href="http://www.mydatastore.com/images/vacation/2014/summer">http://www.mydatastore.com/images/vacation/2014/summer</a></li>
+<li><a href="http://www.mydatastore.com/videos/vacation/2014/winter">http://www.mydatastore.com/videos/vacation/2014/winter</a></li>
+<li><a href="http://www.mydatastore.com/data/documents/balance?format=xml">http://www.mydatastore.com/data/documents/balance?format=xml</a> </li>
+<li><a href="http://www.mydatastore.com/data/archives/2014">http://www.mydatastore.com/data/archives/2014</a></li>
+</ul>
+
+
+
+<h3 id="principle-3-use-the-standard-http-methods">Principle 3 - use the standard HTTP methods</h3>
+
+<ul>
+<li>GET</li>
+<li>PUT</li>
+<li>POST</li>
+<li>DELETE</li>
+</ul>
+
+
+
+<h3 id="principle-4-resources-can-have-multiple-representations">Principle 4 - resources can have multiple representations</h3>
+
+<p>REST endpoints if supported can take multiple formats like xml and json</p>
+
+
+
+<h3 id="principle-5-communicate-statelessly">Principle 5 - communicate statelessly</h3>
+
+<p>All modifications should be carried out in HTTP request in isolation. After the request execution, the resource is left in a final state, no partial updates. (B.L: This is not pragmatic IMO, you are going to need to do partial updates)</p>
+
+
+
+<h3 id="separation-of-the-representation-and-the-resource">Separation of the representation and the resource</h3>
+
+<p>Caller responsible to set the content-type header of http request. Server responsibility to return HTTP status code in the right format.</p>
+
+<ul>
+<li>HTTP 200 OK in the case of success</li>
+<li>HTTP 400 Bad requst if a unsupported content type is requested, or for any other invalid request</li>
+<li>HTTP 500 Internal Server error when something unexpected happens during the request processing</li>
+</ul>
+
+<p>Example request</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso">   GET /<span class="hljs-built_in">data</span>/balance/<span class="hljs-number">22082014</span> HTTP/<span class="hljs-number">1.1</span>
+   Host: my<span class="hljs-attribute">-computer</span><span class="hljs-attribute">-hostname</span>
+   Accept: application/json</code></pre>
+
+<p>Example response:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso">HTTP/<span class="hljs-number">1.1</span> <span class="hljs-number">200</span> OK
+   Content<span class="hljs-attribute">-Type</span>: application/json
+   Content<span class="hljs-attribute">-Length</span>: <span class="hljs-number">120</span>
+   {
+    <span class="hljs-string">"balance"</span>: {
+       <span class="hljs-string">"date"</span>: <span class="hljs-string">"22082014"</span>,
+       <span class="hljs-string">"Item"</span>: <span class="hljs-string">"Sample item"</span>,
+       <span class="hljs-string">"price"</span>: {
+         <span class="hljs-string">"-currency"</span>: <span class="hljs-string">"EUR"</span>,
+         <span class="hljs-string">"#text"</span>: <span class="hljs-string">"100"</span>
+       }
+   } 
+}</code></pre>
+
+
+
+<h3 id="visibility">Visibility</h3>
+
+<ul>
+<li>HTTP method is safe when provided the request, it doesn’t modify or cause side effects on state of resource</li>
+<li>HTTP method is idempotent if response is always the same no matter how many times it is requested</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+  <th align="center">HTTP Method</th>
+  <th align="center">Safe</th>
+  <th align="center">Idempotent</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td align="center">GET</td>
+  <td align="center">Yes</td>
+  <td align="center">Yes</td>
+</tr>
+<tr>
+  <td align="center">POST</td>
+  <td align="center">No</td>
+  <td align="center">No</td>
+</tr>
+<tr>
+  <td align="center">PUT</td>
+  <td align="center">No</td>
+  <td align="center">No</td>
+</tr>
+<tr>
+  <td align="center">DELETE</td>
+  <td align="center">No</td>
+  <td align="center">No</td>
+</tr>
+</tbody></table>
+
+
+<h3 id="scalability-and-performance">Scalability and performance</h3>
+
+<p>Scalability accomplished by REST in best-case scenario would just require you to put another piece of hardware for your load balancer. This is different from performance which is measured by the time needed for a single request to be process, but related to the total number of requests an app can handle.</p>
+
+<h3 id="working-with-wadl">Working with WADL</h3>
+
+<p>XML description of the interface of the service. It is described using resource elements. Each resource contains param elements to describe the inputs and method elements which describe the request and response <br>
+<a href="https://en.wikipedia.org/wiki/Web_Application_Description_Language">Wiki for WADL</a></p>

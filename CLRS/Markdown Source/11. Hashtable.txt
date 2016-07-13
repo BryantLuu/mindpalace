@@ -1,0 +1,97 @@
+Worst case $\Theta(n)$, average case $O(1)$
+
+#Direct Address Table
+
++ Works well when set of keys is small
++ Basically array
+
+#Hashtables
+
+##Collisions
+###Chaining Using Linked List
+
+Worst-Case
+
++ Insert: $O(1)$
++ Delete: $O(1)$ if doubly linked (can just update references)
++ Search $O(n)$
+
+Under Uniform Hashing assumption, as long as number buckets is a function of number of elements. Then expected case is $O(1)$
+
+##Hash Functions
+
+Approximately satisfies the assumption of simple uniform hashing.
+
+###Division Method
+$h(k) = k\ mod\ m$
+Where $k$ is key and $m$ is size of table.
+
++ Pretty fast
++ m should not be a power of $2$ or else it'll just be the lowest-order bits of $k$
++ A prime not too close to an exact power of $2$ is a good choice
+
+###Multiplication Method
+
+Multiply key $k$ by a constant $A: 0 < A < 1$ and extract the fractional part of $kA$.
+
+$h(k) = \left \lfloor{m(kA\ mod\ 1)} \right \rfloor$
+$kA\ mod\ 1 = kA - \left \lfloor{kA} \right \rfloor$
+
++ Value of $m$ is not critical
++ Restrict $A$ to be of form $s/2^w$ where $w$ is the size of word
++ $A = ( \sqrt{5} - 1)/2$ works well
+
+###Universal Hashing
+
+Works against adversary. Select a hash function at random from a carefully designed class of functions. (Similar performance guarantee to quick-sort. 
+
+Let $\mathbb{H}$ be a finite collection of hash functions that maps $\mathbb{U}$ of keys to range $\{0,1,...,m-1\}$. Such a collection is said to be **universal** if for each pair of distinct keys $k, l \in \mathbb{U}$, the # of hash functions $h \in \mathbb{H}$ for $h(k) = h(l)$ is at most $| \mathbb{H} |/m$. At most $1/m$ probability of collision given random choosing.
+
+Family of universal hash functions.
+
+$\mathbb{H_{pm}} = \{ h_{ab}: a \in \mathbb{Z}_p^* \ and\ b \in \mathbb{Z}_p \}$
+where $h_{ab} (k) = ((ak + b)\ mod\ p) mod\ m$
+
+$m$ is the size of the hashtable and $p$ is a prime where $p$ is greater than the universe of keys and $m$.
+
+##Open Addressing
+
+All elements occupy the hash table. Each bucket contains at most one element. No list or other data structures. Can fill up. Can deterministically calculate sequence of buckets to be examined. 
+
+Successively probe the hash table until we find open slot. Order depends on key.
+
+Search similar.
+
+Delete, use something different than null to specify it was deleted.
+
+###Linear Probing
+Use auxiliary hash function $h'$ so $h(k, i) = (h'(k) + i) mod\ m$ for $i = 0, 1, ..., m - 1$ (Just probe linearly). 
+Suffers from **primary clustering**. Long runs of occupied slots can build up.
+
+###Quadratic probing
+
+**Quadratic probing** uses a hash function of the form.
+
+$h(k,i) = (h'(k) + c_1i + c_2i^2)\ mod\ m$
++ values of $c_1$ and $c_2$ are constrained
+**secondary clustering** only $m$ distinct sequences.
+
+###Double Hashing
+
+$h(k,i) = (h_1(k) + i h_2(k)) mod\ m$
+$h_2(k)$ must be relatively prime to the hash-table size $m$.
+
++ let $m$ be a power of 2, and design $h_2$ so it always produce an odd
++ Make $m$ prime and let $h_2$ produce a number less than $m$
+
+$\Theta(m^2)$  possible sequences
+
+##Perfect Hashing
+Can provide excellent worst-case performance when set of keys is static: once the keys are stored in the table, the set of keys never changes.
+
+$O(1)$ memory access are required to perform a search in the worst case.
+
+Two levels of hashing, with universal hashing at each  level.
+
+Similar to chaining but use hash table at the second level instead of linked list.
+Can guarantee that there are no collisions at the secondary level. Takes $O(n)$ memory.

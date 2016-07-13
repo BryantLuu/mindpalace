@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10. Elementary Data Structures</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="stacks-and-queues">Stacks and queues</h1>
+
+<p>Dynamic sets in which the element removed from the set by the delete operation is prespecified. </p>
+
+<p>Stack: LIFO <br>
+Queue: FIFO</p>
+
+
+
+<h2 id="stacks">Stacks</h2>
+
+<p>Insert: Push <br>
+Delete: Pop</p>
+
+<p>Can use an array.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Stack</span> {</span>
+    <span class="hljs-keyword">int</span> top;
+    <span class="hljs-keyword">double</span>[] array;
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isEmpty</span>() {
+        <span class="hljs-keyword">return</span> S.top == <span class="hljs-number">0</span>;
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">push</span>(<span class="hljs-keyword">double</span> x) {
+        S.top += <span class="hljs-number">1</span>;
+        S[S.top] = x;
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">pop</span>() {
+        <span class="hljs-keyword">if</span> (isEmpty()) {
+            <span class="hljs-keyword">throw</span> exception <span class="hljs-string">"underflow"</span>;
+        } <span class="hljs-keyword">else</span> {
+            S.top -= <span class="hljs-number">1</span>;
+            <span class="hljs-keyword">return</span> S[S.top + <span class="hljs-number">1</span>];
+        }
+    }
+}</code></pre>
+
+<p><script type="math/tex" id="MathJax-Element-481">O(1)</script></p>
+
+
+
+<h2 id="queue">Queue</h2>
+
+<p>Insert: enqueue <br>
+Delete: dequeue</p>
+
+<p>has head and tail.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Queue</span> {</span>
+    <span class="hljs-keyword">int</span> tail;
+    <span class="hljs-keyword">int</span> head;
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">enqueue</span>(<span class="hljs-keyword">double</span> x) {
+        Q[tail] = x;
+        <span class="hljs-comment">// can use use tail = (tail + 1) % Q.length;</span>
+        <span class="hljs-keyword">if</span> (tail == Q.length - <span class="hljs-number">1</span>) {
+            tail = <span class="hljs-number">0</span>;
+        } <span class="hljs-keyword">else</span> {
+            tail += <span class="hljs-number">1</span>;
+        }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">dequeue</span>() {
+        x = Q[head];
+
+        <span class="hljs-keyword">if</span> (head == Q.length - <span class="hljs-number">1</span>) {
+            head = <span class="hljs-number">0</span>;
+        } <span class="hljs-keyword">else</span> {
+            head += <span class="hljs-number">1</span>;
+        }
+        <span class="hljs-keyword">return</span> x;
+    }
+}</code></pre>
+
+<p><script type="math/tex" id="MathJax-Element-482">O(1)</script></p>
+
+
+
+<h1 id="linked-list">Linked List</h1>
+
+<p>Objects are arranged in a linear order. <br>
+Cannot be indexed.</p>
+
+<p>Has head</p>
+
+<p>Each node has <br>
+next, (optional) prev.</p>
+
+<p>Searching a linked list.</p>
+
+<p><script type="math/tex" id="MathJax-Element-483">\Theta(n)</script></p>
+
+<p>Insert <script type="math/tex" id="MathJax-Element-484">O(1)</script> <br>
+Delete <script type="math/tex" id="MathJax-Element-485">O(1)</script>, <script type="math/tex" id="MathJax-Element-486">\Theta(n)</script> if need to search for it.</p>
+
+
+
+<h1 id="implement-pointers-and-objects">Implement pointers and objects</h1></div></body>
+</html>

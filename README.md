@@ -1,1 +1,1 @@
-Place to store notes from reading books.
+Place to store knowledge

@@ -1,0 +1,7 @@
+##Randomly Permuting Arrays
++ Permute by sorting
+	+ Assign priorities to each element of array then sort the priorities
++ Each permutation has probability $1/n!$
+	+ Showing that each element has probability of winding up in position j is 1/n (condition it on previous 
++ Randomize-in-place
+	+ Swap A[i] with random from (i, n)

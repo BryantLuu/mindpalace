@@ -1,0 +1,88 @@
+#Stacks and queues
+Dynamic sets in which the element removed from the set by the delete operation is prespecified. 
+
+Stack: LIFO
+Queue: FIFO
+
+##Stacks
+Insert: Push
+Delete: Pop
+
+Can use an array.
+
+```java
+public class Stack {
+	int top;
+	double[] array;
+	public boolean isEmpty() {
+		return S.top == 0;
+	}
+	
+	public void push(double x) {
+		S.top += 1;
+		S[S.top] = x;
+	}
+	
+	public double pop() {
+		if (isEmpty()) {
+			throw exception "underflow";
+		} else {
+			S.top -= 1;
+			return S[S.top + 1];
+		}
+	}
+}
+```
+$O(1)$
+
+##Queue
+Insert: enqueue
+Delete: dequeue
+
+has head and tail.
+
+```java
+public class Queue {
+	int tail;
+	int head;
+	
+	public void enqueue(double x) {
+		Q[tail] = x;
+		// can use use tail = (tail + 1) % Q.length;
+		if (tail == Q.length - 1) {
+			tail = 0;
+		} else {
+			tail += 1;
+		}
+	}
+	
+	public void dequeue() {
+		x = Q[head];
+		
+		if (head == Q.length - 1) {
+			head = 0;
+		} else {
+			head += 1;
+		}
+		return x;
+	}
+}
+```
+$O(1)$
+
+#Linked List
+
+Objects are arranged in a linear order.
+Cannot be indexed.
+
+Has head
+
+Each node has
+next, (optional) prev.
+
+Searching a linked list.
+
+$\Theta(n)$
+
+Insert $O(1)$
+Delete $O(1)$, $\Theta(n)$ if need to search for it.

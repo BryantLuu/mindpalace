@@ -1,0 +1,175 @@
+#Heaps
+##General (Binary)
++ Create $O(n)$
++ Insert: $\Theta(log (n))$
++ Increase-key: $\Theta(log(n))$
++ Decrease-key: $\Theta(log(n))$
++ Delete-max: $\Theta(log(n))$
++ Get max: $\Theta(1)$
++ merge: $\Theta(m log(n + m))$
++ Delete $\Theta(log(n))$
+##Binary heap
+
+
++ A nearly complete binary tree
++ Completey filled except the lowest level
++ Can be represented as an Array A
++ Each node corresponds to a element of the array
++ **Attributes**
+	+ length: number of elements in the array
+	+ heap-size: how many elements in the heap that are stored within array
+		+ $0 \le heap-size \le length$
+	+ As a Tree
+		+ Root of tree is A[0].
+		+ **height** of node: number of edgest from node to a leaf.
+		+ **height** of tree:  height of root ( $\Theta(log(n))$)
+
+```java
+public static int getParentIndex(int i)
+{
+	return i/2;
+}
+
+public static int getLeftChildIndex(int i)
+{
+	return 2 * i;
+}
+
+public static int getRightChildIndex(int i)
+{
+	return 2 * i + 1;
+}
+```
+
+**Two types of Binary Heaps**
+1. Max-heap
+	+ max-heap property: $A[getParentIndex(i)] \ge A[i]$
+	+ Largest element stored at the root
+	+ used for heap sort
+2. Min-heap
+	+ min-heap property $A[getParentIndex(i)] \le A[i]$
+	+ smallest element is at root.
+	+ used for priority queues
+
+**Operations**
++ Max-heapify: $O(log n)$
++ Build-Max_heap: $O(n)$ build heap from unordered input array
++ Heapsort: $O(n lg(n))$ sorts array in place
++  Max-heap-insert, heap-extract-max, heap-increase-key, heap-maximum:
+	+ $O(log(n))$ - allows implementation of priority queue
+
+##Maintaining Heap Property
+
+###Max-heapify
+Takes $O(log (n))$
+
+**Input**: Array A, index i.
+**Conditions**: leftChild(i), rightChild(i) are root nodes  of max-heaps. $A[i]$ might be smaller than it children. Allows $A[i]$ to float down to its correct place.
+
+```java
+public static void maxHeapify(int[] A, int i)
+{
+	int l = getLeftChildIndex(i);
+	int r = getRightChildIndex(i);
+	int largest = i;
+	
+	if (l <= A.length && A[l] > A[i]) {
+		largest = l;
+	}
+	
+	if (r <= A.length && A[r] > A[largest]) {
+		largest = r;
+	}
+	
+	if (largest != i) {
+		double t = A[i];
+		A[i] = A[largest];
+		A[largest] = t;
+		
+		maxHeapify(A, largest);
+	}
+}
+```
+
+##Building a heap
+
+**Inputs**: Array A
+
+```java
+public static void buildMaxHeap(A)
+{
+	for (int i = A.length/2; i > 0; i--) {
+		maxHeapify(A, i);
+	}
+}
+```
+
+$O(n)$ Time. Naive analysis shows $O(n lg(n))$, but can take advantage of the height of each heap at every iteration.
+
+##Heapsort
+
+**Steps**
+1. Build-Max-Heap
+2. Switch A[0] with A[heapSize-1]
+3. heapSize = heapSize - 1
+4. maxHeapify
+4. if heapSize = 0; break else go to 2.
+
+Takes $O(n log (n))$ since $n  - 1$ executions of $O(log(n))$ (maxheapfiy).
+
+##Priority Queues
+**Definition**: a data structure for maintaining a set S of elements, each associated with a key.
+
+**Operation**:
++ **Insert(x)**: insert the element $x$ into set
++ **Maximum()**: returns the element with largest key
++ **Extract-Max(x, k)**: removes and returns the element with largest key
++ **Increase-Key(x, k)**: increase element $x$'s key to new value $k$
+
+Can use a max-heap to implement this.
+
+```java
+public double heapMaximum(double[] A)
+{
+	return A[0];
+}
+
+//Log(n)
+public double heap-Extract-Max(double[] A)
+{
+	assert A.heapsize > 0;
+	double max = A[0];
+	
+	A[0] = A[A.heapsize];
+	A.heapsize--;
+	maxHeapify(A,0);
+	
+	return max;
+}
+
+//Log(n)
+public void increaseKey(double[] A, int i, double key)
+{
+	assert key >= A[i];
+	
+	A[i] = key;
+	while (i > 1 && A[getParentIndex(i)] < A[i]) {
+		double t = A[i];
+		A[i] = A[getParentIndex(i)];
+		A[getParentIndex(i)] = t;
+		i = getParentIndex(i);
+	}
+}
+
+//Log(n)
+public void maxHeapInsert(double[] A, double key)
+{
+	A.heapSize++;
+	//Not Necessary
+	A[A.heapSize] = Double.MIN_VALUE;
+	heapIncreaseKey(A, A.heapSize, key);
+}
+```
+
+Arbitary delete - swap node with last one, run maxheapify on subheap
+Decrease value - change value, run maxheapify on subheap

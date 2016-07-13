@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12. Binary Search Trees</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="binary-search-trees">Binary Search Trees</h1>
+
+<p>Operations take time proportional to height of the tree for complete binary tree <script type="math/tex" id="MathJax-Element-541">\Theta(lg\ n)</script>.  Not balanced then can have <script type="math/tex" id="MathJax-Element-542">\Theta(n)</script> time.</p>
+
+
+
+<h2 id="details">Details</h2>
+
+<p>Linked data structure. each node is an object.</p>
+
+<ul>
+<li><script type="math/tex" id="MathJax-Element-543">key</script></li>
+<li>satellite data</li>
+<li>Attributes <br>
+<ul><li>left</li>
+<li>right</li>
+<li>parent</li></ul></li>
+</ul>
+
+<p><strong>binary-search-tree property</strong></p>
+
+<p>If <script type="math/tex" id="MathJax-Element-544">y</script> is in the left subtree as <script type="math/tex" id="MathJax-Element-545">x.key</script>, <script type="math/tex" id="MathJax-Element-546">y.key \le x.key</script>. If <script type="math/tex" id="MathJax-Element-547">y</script> is in the right subtree as <script type="math/tex" id="MathJax-Element-548">y.key \ge x.key</script>.</p>
+
+<p><strong>Inorder Tree Traversal</strong> <br>
+prints keys in sorted order</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printTreeInorder</span>(Node x) {
+    <span class="hljs-keyword">if</span> (x != <span class="hljs-keyword">null</span>) {
+        printTreeInorder(x.left);
+        System.out.println(x.key);
+        printTreeInorder(x.right);
+    }
+}</code></pre>
+
+<p><strong>Preorder Tree Walk</strong> - prints root before values of subtrees <br>
+<strong>Postorder Tree Walk</strong> - prints root after values of subtrees</p>
+
+
+
+<h2 id="querying-a-binary-search-tree">Querying a binary search tree</h2>
+
+<p>Can support SEARCH, MINIMUM MAXIMUM, SUCCESSOR, PREDECESSOR in <script type="math/tex" id="MathJax-Element-549">O(h)</script> time where <script type="math/tex" id="MathJax-Element-550">h</script> is height.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> Node <span class="hljs-title">searchTree</span>(Node x, <span class="hljs-keyword">int</span> key) {
+    <span class="hljs-keyword">if</span> (x == <span class="hljs-keyword">null</span> || key == x.key) {
+        <span class="hljs-keyword">return</span> x;
+    }
+
+    <span class="hljs-keyword">if</span> (key &lt; x.key) {
+        <span class="hljs-keyword">return</span> searchTree(x.left, key);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> searcHTree(x.right, key);
+    }
+}
+
+<span class="hljs-keyword">public</span> Node <span class="hljs-title">iterativeSearchTree</span>(Node x, <span class="hljs-keyword">int</span> key) {
+    <span class="hljs-keyword">while</span> (x != <span class="hljs-keyword">null</span> &amp;&amp; key != x.key) {
+        <span class="hljs-keyword">if</span> (key &lt; x.key) {
+            x = x.left;
+        } <span class="hljs-keyword">else</span> {
+            x = x.right;
+        }
+    }
+    <span class="hljs-keyword">return</span> x;
+}
+
+<span class="hljs-keyword">public</span> Node <span class="hljs-title">treeMinimum</span>(Node x) {
+    <span class="hljs-keyword">while</span> (x.left != <span class="hljs-keyword">null</span>) {
+        x = x.left;
+    }
+    <span class="hljs-keyword">return</span> x;
+}
+
+<span class="hljs-keyword">public</span> Node <span class="hljs-title">treeMaximum</span>(Node x) {
+    <span class="hljs-keyword">while</span> (x.right != <span class="hljs-keyword">null</span>) {
+        x = x.right;
+    }
+    <span class="hljs-keyword">return</span> x;
+}</code></pre>
+
+<p><strong>Successor and predecessor</strong></p>
+
+<p>If all keys are distinct, then successor to <script type="math/tex" id="MathJax-Element-551">x</script> is the node with smallest key greater than <script type="math/tex" id="MathJax-Element-552">x.key</script>.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> Node <span class="hljs-title">treeSucessor</span>(Node x) {
+    <span class="hljs-keyword">if</span> (x.right != <span class="hljs-keyword">null</span>) {
+        <span class="hljs-keyword">return</span> treeMinimum(x.right);
+    }
+
+    Node y = x.parent;
+
+    <span class="hljs-keyword">while</span> (y != <span class="hljs-keyword">null</span> &amp;&amp; x == y.right) {
+        x = y;
+        y = y.p;
+    }
+
+    <span class="hljs-keyword">return</span> y;
+}</code></pre>
+
+<p>Find node who is the left child of it’s parent, then return the parent.</p>
+
+
+
+<h2 id="insertion-and-deletion">Insertion and deletion</h2>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">treeInsert</span>(Tree T, Node z) {
+    Node y = <span class="hljs-keyword">null</span>;
+    Node x = T.root;
+
+    <span class="hljs-keyword">while</span> (x != <span class="hljs-keyword">null</span>) {
+        y = x;
+        <span class="hljs-keyword">if</span> (z.key &lt; x.key) {
+            x = x.left;
+        } <span class="hljs-keyword">else</span> {
+            x = x.right;
+        }
+        z.p = y;
+    }
+    <span class="hljs-keyword">if</span> (y == <span class="hljs-keyword">null</span>) {
+        T.root = z;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (z.key &lt; y.key) {
+        y.left = z;
+    } <span class="hljs-keyword">else</span> {
+        y.right = z;
+    }
+}</code></pre>
+
+
+
+<h3 id="deletion">Deletion</h3>
+
+<p>Three Cases</p>
+
+<ul>
+<li><script type="math/tex" id="MathJax-Element-553">z</script> has no children, then delete.</li>
+<li>One child, then update the child’s parent to z’s parent.</li>
+<li>Two child, find z’s successor y, then have <script type="math/tex" id="MathJax-Element-554">y</script> take <script type="math/tex" id="MathJax-Element-555">z</script>’s place</li>
+</ul>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">transplant</span>(Tree T, Node u, Node v) {
+    <span class="hljs-keyword">if</span> (u.p == <span class="hljs-keyword">null</span>) {
+        T.root = v;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (u == u.p.left) {
+        u.p.left = v;
+    } <span class="hljs-keyword">else</span> {
+        u.p.right = v;
+    }
+
+    <span class="hljs-keyword">if</span> (v != <span class="hljs-keyword">null</span>) {
+        v.p = u.p;
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">treeDelete</span>(Tree T, Node z) {
+    <span class="hljs-keyword">if</span> (z.left == <span class="hljs-keyword">null</span>) {
+        transplant(T, z, z.right);
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (z.right == <span class="hljs-keyword">null</span>) {
+        transplant(T, z, z.left);
+    } <span class="hljs-keyword">else</span> {
+        y = treeMinimum(z.right);
+        <span class="hljs-keyword">if</span> (y.p != z) {
+            transplant(T, y, y.right);
+            y.right = z.right;
+            y.right.p = y;
+        }
+        transplant(T, z, y);
+        y.left = z.left;
+        y.left.p = y;
+    }
+}</code></pre>
+
+
+
+<h2 id="randomly-built-binary-search-trees">Randomly built binary search trees</h2>
+
+<p>Look into this if I have time.</p></div></body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13. Red Black Tree</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><p>Guarantee <script type="math/tex" id="MathJax-Element-556">O(lg\ n)</script> worst case.</p>
+
+
+
+<h1 id="properties">Properties</h1>
+
+<ul>
+<li>has extra field for color</li>
+<li>Guarantees that no node path is more than twice as long as the shortest.</li>
+</ul>
+
+<p>RB- Properties</p>
+
+<ul>
+<li>Each node is red or black</li>
+<li>The root is black</li>
+<li>Each leaf is black (nil node)</li>
+<li>If a node is red, then children are black</li>
+<li>For each node, all simple paths to descendant leaves contain the same number of black nodes</li>
+</ul>
+
+<p># of black nodes from (not including) node <script type="math/tex" id="MathJax-Element-557">x</script> to descent leaves is <strong>black-height</strong></p>
+
+<p><strong>Height Property</strong> <br>
+A red-black tree with n internal nodes has height at most <script type="math/tex" id="MathJax-Element-558">2lg(n + 1)</script></p>
+
+<p>Proof: Lower bound number of nodes given a <strong>black-height</strong>. Given height, lower bound <strong>black-height</strong></p>
+
+
+
+<h1 id="rotations">Rotations</h1>
+
+<p>Need to preserve RB property when doing insertion/deletions</p>
+
+
+
+<h1 id="left-rotation">Left Rotation</h1>
+
+<p>Left rotation on node <script type="math/tex" id="MathJax-Element-559">x</script> <br>
+Assume that <script type="math/tex" id="MathJax-Element-560">x.right = y != null</script></p>
+
+<p><script type="math/tex" id="MathJax-Element-561">y</script> becomes root of subtree, <script type="math/tex" id="MathJax-Element-562">y.left = x</script>, <script type="math/tex" id="MathJax-Element-563">x.right = y.left</script></p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">leftRotate</span>(RBNode x) {
+    Node y = x.right;
+    <span class="hljs-keyword">if</span> (y != <span class="hljs-keyword">null</span>) {
+        x.right = y.left;
+        <span class="hljs-keyword">if</span> (x.right != <span class="hljs-keyword">null</span>) {
+            x.right.p = x;
+        }
+        y.p = x.p;
+        x.p = y;
+        y.left = x;
+        <span class="hljs-keyword">if</span> (y.p == <span class="hljs-keyword">null</span>) {
+            root = y;
+        }
+    }
+}</code></pre>
+
+
+
+<h1 id="insertion">Insertion</h1>
+
+<p>Insertion runs in <script type="math/tex" id="MathJax-Element-564">O(lg\ n)</script> time.</p>
+
+<p>Red-black insert: Like tree-insert, but need to fix up coloring. Inserted node is red.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">insertRB</span>(RBTree T, RBNode z) {
+    RBNode y = T.<span class="hljs-keyword">null</span>;
+    RBNode x = T.root;
+
+    <span class="hljs-keyword">while</span> (x != T.<span class="hljs-keyword">null</span>) {
+        y = x;
+        <span class="hljs-keyword">if</span> (z.key &lt; x.key) {
+            x = x.left;
+        } <span class="hljs-keyword">else</span> {
+            x = x.right;
+        }
+    }
+
+    z.p = y;
+
+    <span class="hljs-keyword">if</span> (y == T.<span class="hljs-keyword">null</span>) {
+        T.root = z;
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (z.key &lt; y.key) {
+        y.left = z;
+    } <span class="hljs-keyword">else</span> {
+        y.right = z;
+    }
+
+    z.left = T.<span class="hljs-keyword">null</span>;
+    z.right = T.<span class="hljs-keyword">null</span>;
+    z.color = RED;
+
+    rbInsertFixup(T, z);
+}</code></pre>
+
+<p>Possible violations: Root black, Red parent.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">rbInsertFixup</span>(RBTree T,  Node z) {
+    <span class="hljs-keyword">while</span> (z.parent.color == RED) {
+    }
+
+    T.root.color = BLACK;
+}</code></pre>
+
+<p>Basically fixes bottom up. <script type="math/tex" id="MathJax-Element-565">O(lg(n))</script></p>
+
+
+
+<h1 id="delete">Delete</h1>
+
+<p>Same thing basically.</p></div></body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09. Median and Order Stats</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><p><script type="math/tex" id="MathJax-Element-468">ith</script> <strong>order statistic</strong> of <script type="math/tex" id="MathJax-Element-469">n</script> elements: <script type="math/tex" id="MathJax-Element-470">ith</script> smallest element</p>
+
+
+
+<h1 id="minmax">Min/Max</h1>
+
+<p>Individually takes <script type="math/tex" id="MathJax-Element-471">\Theta(n)</script> time with <script type="math/tex" id="MathJax-Element-472">2n-2</script> comparisons.</p>
+
+
+
+<h2 id="simultaneous-minmax">Simultaneous min/max</h2>
+
+<p>Must find both the minimum/maximum of a set. <script type="math/tex" id="MathJax-Element-473">\Theta(n)</script>. Can reduce the computational load by comparing pairs of elements.</p>
+
+<ul>
+<li>Compare the pairs to themselves</li>
+<li>Compare max of pairs to current max</li>
+<li>Compare min of pairs to current min</li>
+</ul>
+
+<p>Takes 3 comparisons instead of 4.</p>
+
+
+
+<h2 id="selection-in-expected-linear-time">Selection in expected linear time</h2>
+
+<p>Can run in <script type="math/tex" id="MathJax-Element-474">\Theta(n)</script> time. </p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">randomizedSelect</span>( <span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">int</span> p, <span class="hljs-keyword">int</span> r, <span class="hljs-keyword">int</span> i) {
+    <span class="hljs-keyword">if</span> (p == r) {
+        <span class="hljs-keyword">return</span> A[p];
+    }
+
+    q = randomizedPartition(A, p, r);
+    k = q - p + <span class="hljs-number">1</span>;
+
+    <span class="hljs-keyword">if</span> (i == k) {
+        <span class="hljs-keyword">return</span> A[q];
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (i &lt; k) {
+        <span class="hljs-keyword">return</span> randomizedSelect(A, p, q - <span class="hljs-number">1</span>, i);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> randomizedSelect(A, q + <span class="hljs-number">1</span>, r, i - k);
+    }
+}</code></pre>
+
+<p>Worst case is <script type="math/tex" id="MathJax-Element-475">\Theta(n^2)</script>, expect time is <script type="math/tex" id="MathJax-Element-476">\Theta(n)</script>.</p>
+
+
+
+<h2 id="selection-in-worst-case-linear-time">Selection in worst-case linear time.</h2>
+
+<p>Can guarantee a good partition.</p>
+
+<ol>
+<li>Divide <script type="math/tex" id="MathJax-Element-477">n</script> elements of the input array into <script type="math/tex" id="MathJax-Element-478">Floor(n/5)</script> groups of 5 elements each.</li>
+<li>Find the median of each groups by insertion sort.</li>
+<li>Use SELECT recursively to find the median of medians. </li>
+<li>Partition the array around the median-of-medians <script type="math/tex" id="MathJax-Element-479">x</script>, if <script type="math/tex" id="MathJax-Element-480">x</script> is kth element then return.</li>
+<li>Otherwise perform recursively.</li>
+</ol></div></body>
+</html>

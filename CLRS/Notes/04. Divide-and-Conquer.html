@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04. Divide-and-Conquer</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="divide-and-conquer">Divide-and-Conquer</h1>
+
+
+
+<h2 id="definitions">Definitions</h2>
+
+<ul>
+<li><strong><em>Three Steps</em></strong> <br>
+<ul><li><strong>Divide</strong>: Split problem into a number of sub-problems</li>
+<li><strong>Conquer</strong>: Solve the problems either recursively or in a straightforward manner</li>
+<li><strong>Combine</strong>: Combine the solutions to the sub-problems</li></ul></li>
+<li><strong><em>Recursive Case</em></strong>: When sub-problems are large enough to be solved recursively</li>
+<li><strong><em>Base Case</em></strong>: Small enough to solve directly</li>
+</ul>
+
+
+
+<h2 id="recurrences">Recurrences</h2>
+
+<p><strong><em>Recurrences</em></strong>: an equation/inequality that describes a function in terms of its value on smaller inputs (ex. Fibonacci)</p>
+
+<ul>
+<li>Three methods for solving recurrences <br>
+<ul><li><strong>Substitution</strong>: Guess a bound and then use induction to prove</li>
+<li><strong>Recursion-tree</strong>: Converts recurrence into a tree whose nodes represent the costs incurred at various levels of recursion. Use techniques for bounding summations</li>
+<li><strong>Master Method</strong>: for bounds of the form: <script type="math/tex" id="MathJax-Element-337">T(n) = a T(n/b) + f(n) | a \ge 1, b > 1</script> <br>
+<ul><li>For cases where recursion creates <script type="math/tex" id="MathJax-Element-338">a</script> sub-problems each <script type="math/tex" id="MathJax-Element-339">1/b</script> fraction of the original with the divide and combine step taking <script type="math/tex" id="MathJax-Element-340">f(n)</script> time combined.</li></ul></li></ul></li>
+</ul>
+
+
+
+<h2 id="maximum-subarray-problem">Maximum-subarray Problem</h2>
+
+<p>Given sequence of numbers <script type="math/tex" id="MathJax-Element-341">c_0...c_n</script>, find the sub-sequence <script type="math/tex" id="MathJax-Element-342">c_i...c_j</script> that has that maximum sum.</p>
+
+
+
+<h3 id="naive-solution">Naive Solution</h3>
+
+<p><script type="math/tex" id="MathJax-Element-343">\Theta(n^2)</script> since need to check every start/end index. The computation of the sub-arrays can be organized so each sub-array sum takes <script type="math/tex" id="MathJax-Element-344">O(1)</script>.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-javadoc">/**
+ * Computes the sum of the maximum sub-array
+ * Need to keep index of i,j to find the maximum  sub-sequence
+ *<span class="hljs-javadoctag"> @param</span> A array of doubles to find maximum
+ *<span class="hljs-javadoctag"> @return</span> max sum of maximum sub-array
+ */</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">naiveMaxSum</span>(<span class="hljs-keyword">double</span>[] A)
+{
+    <span class="hljs-keyword">double</span> max = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; A.length; i++) {
+        <span class="hljs-keyword">double</span> prevSum = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = i; j &lt; A.length; j++) {
+                prevSum += A[j];
+                <span class="hljs-keyword">if</span> (prevSum &gt; max)
+                    max = prevSum;
+        }
+    }
+    <span class="hljs-keyword">return</span> max;
+}</code></pre>
+
+
+
+<h3 id="divide-and-conquer-1">Divide-and-conquer</h3>
+
+<p><strong>Intuition</strong></p>
+
+<ul>
+<li>Divide array into two subarrays <script type="math/tex" id="MathJax-Element-345">A[i...j], A[j + 1... k]</script></li>
+<li>any subarray must lie in <br>
+<ol><li><script type="math/tex" id="MathJax-Element-346">A[i..j]</script></li>
+<li><script type="math/tex" id="MathJax-Element-347">A[j + 1..k]</script></li>
+<li>Or crossing midpoint <script type="math/tex" id="MathJax-Element-348">j</script>.</li></ol></li>
+</ul>
+
+<p>Trick is to use step <script type="math/tex" id="MathJax-Element-349">3</script> as the combine step.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Subarray</span>
+{</span>
+    <span class="hljs-keyword">int</span> low;
+    <span class="hljs-keyword">int</span> high;
+    <span class="hljs-keyword">double</span> sum;
+
+    <span class="hljs-keyword">public</span> <span class="hljs-title">Subarray</span>(<span class="hljs-keyword">int</span> _low, <span class="hljs-keyword">int</span> _high, <span class="hljs-keyword">double</span> _sum)
+    {
+        low = _low;
+        high = _high;
+        sum = _sum;
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Subarray <span class="hljs-title">findMaxCrossingSubArray</span>( <span class="hljs-keyword">double</span> A[], <span class="hljs-keyword">int</span> low, <span class="hljs-keyword">int</span> mid, <span class="hljs-keyword">int</span> high) {
+    <span class="hljs-keyword">double</span> leftSum = Double.MIN_VALUE;
+    <span class="hljs-keyword">double</span> sum = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">double</span> maxLeft;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = mid; i &gt;= low; i--) {
+        sum += A[i];
+        <span class="hljs-keyword">if</span> (sum &gt; leftSum) {
+            leftSum = sum;
+            maxLeft = i;
+        }
+    }
+
+    <span class="hljs-keyword">double</span> rightSum = Double.MIN_VALUE;
+    <span class="hljs-keyword">double</span> maxRight;
+    sum = <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = mid; i &lt;= high; i++) {
+        sum += A[i];
+        <span class="hljs-keyword">if</span> (sum &gt; rightSum) {
+            rightSum = sum;
+            maxRight = i;
+        }
+    }
+
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Subarray(maxLeft, maxRight, leftSum + rightSum);
+}</code></pre>
+
+<p>Above takes <script type="math/tex" id="MathJax-Element-350">\Theta(n)</script> time</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Subarray <span class="hljs-title">findMaximumSubarray</span>(<span class="hljs-keyword">double</span>[] A, <span class="hljs-keyword">int</span> low, <span class="hljs-keyword">int</span> high)
+{
+    <span class="hljs-keyword">if</span> (low == high)
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Subarray(low, high, A[low]);
+
+    <span class="hljs-keyword">int</span> mid = (low + high)/<span class="hljs-number">2</span>;
+    Subarray left = findMaximumSubarray(A, low, mid);
+    Subarray right = findMaximumSubarray(A, mid + <span class="hljs-number">1</span>, high);
+    Subarray cross = findMaxCrossingSubArray(A, low, mid, high);
+
+    <span class="hljs-keyword">if</span> (left.sum &gt;= right.sum &amp;&amp; left.sum &gt;= cross.sum)
+        <span class="hljs-keyword">return</span> left;
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (right.sum &gt;= left.sum &amp;&amp; right.sum &gt;= cross.sum)
+        <span class="hljs-keyword">return</span> right;
+    <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">return</span> cross;
+}</code></pre>
+
+
+
+<h2 id="strassens-alg-for-matrix-multiplication">Strassen’s Alg for Matrix Multiplication</h2>
+
+<p>Given <script type="math/tex" id="MathJax-Element-351">A, B, C \in \mathbb{R}^{n x n}</script> where <script type="math/tex" id="MathJax-Element-352">C = A \times B</script></p>
+
+<p><script type="math/tex" id="MathJax-Element-353">c_{ij} = \sum_{k = 1}^n a_{ik} \times b_{kj}</script>.</p>
+
+<p>Naive way takes <script type="math/tex" id="MathJax-Element-354">\Theta(n^3)</script>.</p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span>[][] <span class="hljs-title">squareMatrixMult</span>(<span class="hljs-keyword">double</span>[][] A, <span class="hljs-keyword">double</span>[][] B)
+{
+    <span class="hljs-keyword">int</span> n = A.length;
+    <span class="hljs-keyword">double</span>[][] C = <span class="hljs-keyword">new</span> <span class="hljs-keyword">double</span>[n][n];
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n; i++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>; j &lt; n; j++)
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> k = <span class="hljs-number">0</span>; k &lt; n; k++)
+                C[i][j] += A[i][k] * B[k][j];
+    <span class="hljs-keyword">return</span> C;
+}</code></pre>
+
+<p>Strassen Alg runs in <script type="math/tex" id="MathJax-Element-355">\Theta(n^{lg(7)})</script> time!. <br>
+<script type="math/tex" id="MathJax-Element-356">A = \begin{pmatrix}  
+        A_{11} & A_{12} \\  
+        A_{21} & A_{22}  
+        \end{pmatrix},  
+B = \begin{pmatrix}
+		B_{11} & B_{12} \\\
+		B_{21} & B_{22}
+		\end{pmatrix},   
+C = \begin{pmatrix}
+		C_{11} & C_{12} \\\
+		C_{21} & C_{22}
+		\end{pmatrix}</script></p>
+
+<p><script type="math/tex" id="MathJax-Element-357">C_{11} = A_{11} \cdot B_{11} + A_{12} \cdot B_{21}</script> <br>
+<script type="math/tex" id="MathJax-Element-358">C_{12} = A_{11} \cdot B_{13} + A_{12} \cdot B_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-359">C_{21} = A_{21} \cdot B_{11} + A_{22} \cdot B_{21}</script> <br>
+<script type="math/tex" id="MathJax-Element-360">C_{22} = A_{21} \cdot B_{12} + A_{22} \cdot B_{22}</script></p>
+
+<p><strong>WILL TAKE WAY TO LONG TO IMPLEMENT</strong></p>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Subarray</span>
+{</span>
+    <span class="hljs-keyword">int</span> topLeft;
+    <span class="hljs-keyword">int</span> topRight;
+    <span class="hljs-keyword">int</span> botLeft;
+    <span class="hljs-keyword">int</span> botRight;
+
+    <span class="hljs-keyword">public</span> <span class="hljs-title">Subarray</span>(<span class="hljs-keyword">int</span> _topLeft, <span class="hljs-keyword">int</span> _topRight, <span class="hljs-keyword">int</span> _botLeft, <span class="hljs-keyword">int</span> _botRight)
+    {
+        topLeft = _topLeft;
+        topRight = _topRight;
+        botLeft = _botLeft;
+        botRight = _botRight;
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">size</span>()
+    {
+        <span class="hljs-keyword">return</span> topLeft - topRight;
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Subarray[][] <span class="hljs-title">splitMatrix</span>(Subarray sa)
+{
+    Subarray[][] t = <span class="hljs-keyword">new</span> Subarray[<span class="hljs-number">2</span>][<span class="hljs-number">2</span>];
+    <span class="hljs-keyword">int</span> n = sa.size();
+    <span class="hljs-keyword">int</span> 
+
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">double</span>[][] <span class="hljs-title">squareMatrixMultRecursive</span>(<span class="hljs-keyword">double</span>[][] A, <span class="hljs-keyword">double</span>[][] B, Subarray t1, Subarray t2)
+{
+    <span class="hljs-keyword">int</span> n = t1.size();
+    <span class="hljs-keyword">double</span>[][] C = <span class="hljs-keyword">new</span> <span class="hljs-keyword">double</span>[n][n];
+
+    <span class="hljs-keyword">if</span> (n == <span class="hljs-number">1</span>) {
+        C[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = A[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] * B[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>];
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">double</span>[][] C11 = squareMatrixMultRecursive(A11, B11) + squareMatrixMultRecursive(A12, B21);
+        <span class="hljs-keyword">double</span>[][] C12 =squareMatrixMultRecursive(A11, B12) + squareMatrixMultRecursive(A12, B22);
+        <span class="hljs-keyword">double</span>[][] C21 = squareMatrixMultRecursive(A21, B11) + squareMatrixMultRecursive(A22, B21);
+        <span class="hljs-keyword">double</span>[][] C22 = squareMatrixMultRecursive(A21, B12) + squareMatrixMultRecursive(A22, B22);
+
+    <span class="hljs-keyword">return</span> C;
+}</code></pre>
+
+<p>Still <script type="math/tex" id="MathJax-Element-361">\Theta(O^3)</script>.</p>
+
+<p>Strassen’s method creates 10 matrices, and computes 7 matrix products instead of 8.</p>
+
+<p><script type="math/tex" id="MathJax-Element-362">S_1 = B_{12} - B_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-363">S_2 = A_{11} + A_{12}</script> <br>
+<script type="math/tex" id="MathJax-Element-364">S_3 = A_{21} + A_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-365">S_4 = B_{21} - B_{11}</script> <br>
+<script type="math/tex" id="MathJax-Element-366">S_5 = A_{11} + A_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-367">S_6 = B_{12} + B_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-368">S_7 = A_{12} - A_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-369">S_8 = B_{21} + B_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-370">S_9 = A_{11} - A_{21}</script> <br>
+<script type="math/tex" id="MathJax-Element-371">S_{10} = B_{11} + B_{12}</script></p>
+
+<p><script type="math/tex" id="MathJax-Element-372">P_1 = A_{11} \cdot S_1</script> <br>
+<script type="math/tex" id="MathJax-Element-373">P_2 = S_2 \cdot B_{22}</script> <br>
+<script type="math/tex" id="MathJax-Element-374">P_3 = S_3 \cdot B_{11}</script> <br>
+<script type="math/tex" id="MathJax-Element-375">P_4 = A_{22} \cdot S_{4}</script> <br>
+<script type="math/tex" id="MathJax-Element-376">P_5 = S_5 \cdot S_{6}</script> <br>
+<script type="math/tex" id="MathJax-Element-377">P_6 = S_7 \cdot S_{8}</script> <br>
+<script type="math/tex" id="MathJax-Element-378">P_7 = S_9 \cdot S_{10}</script></p>
+
+<p><script type="math/tex" id="MathJax-Element-379">C_{11} = P_5 + P_4 - P_2 + P_6</script> <br>
+<script type="math/tex" id="MathJax-Element-380">C_{12} = P_1 + P_2</script> <br>
+<script type="math/tex" id="MathJax-Element-381">C_{21} = P_3 + P_4</script> <br>
+<script type="math/tex" id="MathJax-Element-382">C_{22} = P_5 + P_1 - P_3 - P_7</script></p></div></body>
+</html>

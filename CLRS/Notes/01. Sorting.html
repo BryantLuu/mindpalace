@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01. Sorting</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h1 id="sorting">Sorting</h1>
+
+
+
+<h2 id="notes">Notes</h2>
+
+
+
+<h3 id="terminology">Terminology</h3>
+
+<ul>
+<li><strong><em>In-place</em></strong>:  Only a constant number of elements are stored outside the data struct at any given time</li>
+<li><strong><em>Loop Invariant</em></strong>: The following must be proved <br>
+<ul><li><strong>Initialization</strong>: True prior to first iteration</li>
+<li><strong>Maintenance</strong>: If true before an iteration, remains true before the next iteration</li>
+<li><strong>Termination</strong>: When the loop terminates, the invariant gives useful property to show algorithm is correct</li>
+<li>Similar to inductive proofs</li></ul></li>
+</ul>
+
+
+
+<h3 id="design">Design</h3>
+
+<ul>
+<li><strong><em>Incremental Approach</em></strong>:  Incrementally solving <br>
+<ul><li>Think insertion sort</li></ul></li>
+<li><strong><em>Divide and conquer</em></strong> <br>
+<ul><li>Often recursive to deal with sub-problems</li>
+<li><strong>Divide</strong>: Split the problem into number of smaller sub-problems that are instances of the same problem</li>
+<li><strong>Conquer</strong>: Solve the sub-problems recursively until size is small enough to be solved directly</li>
+<li><strong>Combine</strong>: Use the solutions to the sub-problems to create the solution for the original problem</li>
+<li>Think merge-sort</li></ul></li>
+</ul>
+
+
+
+<h2 id="insertion-sort">Insertion Sort</h2>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">int</span>[] A = {<span class="hljs-number">10</span>, -<span class="hljs-number">1</span>, <span class="hljs-number">3</span>, <span class="hljs-number">11</span>, <span class="hljs-number">12</span>};
+insertionSort(A);
+
+<span class="hljs-javadoc">/**
+ * Sorts array in ascending order
+ *<span class="hljs-javadoctag"> @param</span> A array to be sorted
+ */</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">insertionSort</span>(<span class="hljs-keyword">int</span>[] A)
+{
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = <span class="hljs-number">1</span>; i &lt; A.length; i++) {
+        <span class="hljs-keyword">int</span> key = A[j];
+        i = j - <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">while</span> (i &gt;= <span class="hljs-number">0</span> &amp;&amp; A[i] &gt; key) {
+            A[i + <span class="hljs-number">1</span>] = A[i]
+            i--;
+        }
+        A[i + <span class="hljs-number">1</span>] = key;
+    }
+}</code></pre>
+
+
+
+<h3 id="analysis">Analysis</h3>
+
+<p><script type="math/tex" id="MathJax-Element-290">n = </script> # of elements <br>
+ Worst case <script type="math/tex" id="MathJax-Element-291">\Theta(n^2)</script>: Reverse sort <br>
+ Best case <script type="math/tex" id="MathJax-Element-292">\Theta(n)</script>: Already sorted <br>
+<strong>In-place</strong> <br>
+<strong>Loop Invariant</strong>: At any iteration j, <script type="math/tex" id="MathJax-Element-293">A[0...j-1]</script> is sorted and consists of elements originally in <script type="math/tex" id="MathJax-Element-294">A[0..j-1]</script></p>
+
+
+
+<h2 id="merge-sort">Merge Sort</h2>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs ">
+<span class="hljs-javadoc">/**
+ * Sort array A using mergeSort
+ *<span class="hljs-javadoctag"> @param</span> A array to be sorted
+ */</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">mergeSort</span>(<span class="hljs-keyword">int</span>[] A)
+{
+    mergeSort(A, <span class="hljs-number">0</span>, A.length - <span class="hljs-number">1</span>);
+}
+
+<span class="hljs-javadoc">/**
+ * Sorts sub-array A[p..r]
+ *<span class="hljs-javadoctag"> @param</span> A array to be sorted
+ *<span class="hljs-javadoctag"> @param</span> p start index of sub-array
+ *<span class="hljs-javadoctag"> @param</span> r end index of sub-array
+ */</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">mergeSort</span>(<span class="hljs-keyword">int</span>[] A, <span class="hljs-keyword">int</span> p, <span class="hljs-keyword">int</span> r)
+{
+    <span class="hljs-keyword">if</span> (p &lt; r) {
+        <span class="hljs-keyword">int</span> q = (p + r)/<span class="hljs-number">2</span>; <span class="hljs-comment">//implicit floor()</span>
+        mergeSort(A, p, q);
+        mergeSort(A, q + <span class="hljs-number">1</span>, r);
+        merge(A, p, q, r);
+    }
+}
+
+<span class="hljs-javadoc">/**
+ * Merges to sorted subarrays A[p...q], A[q + 1... r]
+ * p &lt;= q &lt; r
+ *<span class="hljs-javadoctag"> @param</span> A array to be sorted
+ *<span class="hljs-javadoctag"> @param</span> p start index of first sub-array
+ *<span class="hljs-javadoctag"> @param</span> q end index of first sub-array
+ *<span class="hljs-javadoctag"> @param</span> r end index of second sub-array
+ */</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">merge</span>(<span class="hljs-keyword">int</span>[] A, <span class="hljs-keyword">int</span> p, <span class="hljs-keyword">int</span> q, <span class="hljs-keyword">int</span> r)
+{
+    <span class="hljs-keyword">assert</span> p &gt;= <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">assert</span> p &lt;= q;
+    <span class="hljs-keyword">assert</span> q &lt; r;
+    <span class="hljs-keyword">assert</span> r &lt; A.length;
+
+    <span class="hljs-keyword">int</span> n1 = q - p + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">int</span> n2 = r - q;
+
+    <span class="hljs-keyword">int</span>[] L = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[n1 + <span class="hljs-number">1</span>];
+    <span class="hljs-keyword">int</span>[] R = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[n2 + <span class="hljs-number">1</span>];
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; n1 - <span class="hljs-number">1</span>; i++)
+        L[i] = L[p + i];
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>; j &lt; n2 - <span class="hljs-number">1</span>; j++)
+        R[j] = A[q + j + <span class="hljs-number">1</span>];
+
+    L[n1] = Integer.MAX_VALUE;
+    L[n2] = Integer.MAX_VALUE;
+
+    <span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>;
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> k = p; k &lt;= r; k++) {
+        <span class="hljs-keyword">if</span> (L[i] &lt;= R[j]) {
+            A[k] = L[i];
+            i++;
+        } <span class="hljs-keyword">else</span> {
+            A[k] = R[j];
+            j++;
+        }
+    }
+}</code></pre>
+
+
+
+<h3 id="analysis-1">Analysis</h3>
+
+<p>Merge takes <script type="math/tex" id="MathJax-Element-295">\Theta(n)</script> time where <script type="math/tex" id="MathJax-Element-296">n = r - p + 1</script> (length of sub-array) <br>
+Merge-sort takes <script type="math/tex" id="MathJax-Element-297">\Theta(n\ log(n))</script> time</p>
+
+<ul>
+<li><strong>Divide</strong>: Divide the n-element sequence into sub-sequences of <script type="math/tex" id="MathJax-Element-298">n/2</script> elements each</li>
+<li><strong>Conquer</strong>: Sort the two sub-sequences using merge sort</li>
+<li><strong>Combine</strong>: Merge the two sorted sub-sequences</li>
+</ul>
+
+<p><strong>Loop Invariant</strong>: At start of each iteration of the <strong>for</strong> loop, the sub-array <script type="math/tex" id="MathJax-Element-299">A[p..k-1]</script> contains the <script type="math/tex" id="MathJax-Element-300">k-p</script> smallest elements of <script type="math/tex" id="MathJax-Element-301">L[1..n_1 + 1]</script> and <script type="math/tex" id="MathJax-Element-302">R[1..n_2 + 1]</script> in sorted order. <script type="math/tex" id="MathJax-Element-303">L[i]</script> and <script type="math/tex" id="MathJax-Element-304">R[j]</script> are the smallest elements of their arrays that have not been copied back into <script type="math/tex" id="MathJax-Element-305">A</script>.</p>
+
+<ul>
+<li><strong>Initialization</strong>:  <br>
+<ul><li>Prior to first init k = p so trivially true, <script type="math/tex" id="MathJax-Element-306">L[i]</script>, <script type="math/tex" id="MathJax-Element-307">R[j]</script> are the smallest elements since <script type="math/tex" id="MathJax-Element-308">L, R</script> is sorted</li></ul></li>
+<li><strong>Maintenance</strong>: <br>
+<ul><li>Fairly easy to show…</li></ul></li>
+<li><strong>Termination</strong>: <br>
+<ul><li>k = r + 1, all elements copied back except for infinity values.</li></ul></li>
+</ul>
+
+
+
+<h1 id="bubblesort">Bubblesort</h1>
+
+
+
+<pre class="prettyprint"><code class="language-java hljs "><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-keyword">static</span> <span class="hljs-title">bubbleSort</span>(<span class="hljs-keyword">int</span>[] A) {
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; A.length; i++)
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = A.length; j &gt; i; j--)
+            <span class="hljs-keyword">if</span> (A[j] &lt; A[j - <span class="hljs-number">1</span>]) {
+                <span class="hljs-keyword">int</span> t = A[j];
+                A[j] = A[j - <span class="hljs-number">1</span>];
+                A[j - <span class="hljs-number">1</span>] = t;
+            }   
+}</code></pre>
+
+<ul>
+<li><script type="math/tex" id="MathJax-Element-309">\Theta(n^2)</script> worst and best case time</li>
+</ul></div></body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11. Hashtable</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><p>Worst case <script type="math/tex" id="MathJax-Element-487">\Theta(n)</script>, average case <script type="math/tex" id="MathJax-Element-488">O(1)</script></p>
+
+
+
+<h1 id="direct-address-table">Direct Address Table</h1>
+
+<ul>
+<li>Works well when set of keys is small</li>
+<li>Basically array</li>
+</ul>
+
+
+
+<h1 id="hashtables">Hashtables</h1>
+
+
+
+<h2 id="collisions">Collisions</h2>
+
+
+
+<h3 id="chaining-using-linked-list">Chaining Using Linked List</h3>
+
+<p>Worst-Case</p>
+
+<ul>
+<li>Insert: <script type="math/tex" id="MathJax-Element-489">O(1)</script></li>
+<li>Delete: <script type="math/tex" id="MathJax-Element-490">O(1)</script> if doubly linked (can just update references)</li>
+<li>Search <script type="math/tex" id="MathJax-Element-491">O(n)</script></li>
+</ul>
+
+<p>Under Uniform Hashing assumption, as long as number buckets is a function of number of elements. Then expected case is <script type="math/tex" id="MathJax-Element-492">O(1)</script></p>
+
+
+
+<h2 id="hash-functions">Hash Functions</h2>
+
+<p>Approximately satisfies the assumption of simple uniform hashing.</p>
+
+
+
+<h3 id="division-method">Division Method</h3>
+
+<p><script type="math/tex" id="MathJax-Element-493">h(k) = k\ mod\ m</script> <br>
+Where <script type="math/tex" id="MathJax-Element-494">k</script> is key and <script type="math/tex" id="MathJax-Element-495">m</script> is size of table.</p>
+
+<ul>
+<li>Pretty fast</li>
+<li>m should not be a power of <script type="math/tex" id="MathJax-Element-496">2</script> or else it’ll just be the lowest-order bits of <script type="math/tex" id="MathJax-Element-497">k</script></li>
+<li>A prime not too close to an exact power of <script type="math/tex" id="MathJax-Element-498">2</script> is a good choice</li>
+</ul>
+
+
+
+<h3 id="multiplication-method">Multiplication Method</h3>
+
+<p>Multiply key <script type="math/tex" id="MathJax-Element-499">k</script> by a constant <script type="math/tex" id="MathJax-Element-500">A: 0 < A < 1</script> and extract the fractional part of <script type="math/tex" id="MathJax-Element-501">kA</script>.</p>
+
+<p><script type="math/tex" id="MathJax-Element-502">h(k) = \left \lfloor{m(kA\ mod\ 1)} \right \rfloor</script> <br>
+<script type="math/tex" id="MathJax-Element-503">kA\ mod\ 1 = kA - \left \lfloor{kA} \right \rfloor</script></p>
+
+<ul>
+<li>Value of <script type="math/tex" id="MathJax-Element-504">m</script> is not critical</li>
+<li>Restrict <script type="math/tex" id="MathJax-Element-505">A</script> to be of form <script type="math/tex" id="MathJax-Element-506">s/2^w</script> where <script type="math/tex" id="MathJax-Element-507">w</script> is the size of word</li>
+<li><script type="math/tex" id="MathJax-Element-508">A = ( \sqrt{5} - 1)/2</script> works well</li>
+</ul>
+
+
+
+<h3 id="universal-hashing">Universal Hashing</h3>
+
+<p>Works against adversary. Select a hash function at random from a carefully designed class of functions. (Similar performance guarantee to quick-sort. </p>
+
+<p>Let <script type="math/tex" id="MathJax-Element-509">\mathbb{H}</script> be a finite collection of hash functions that maps <script type="math/tex" id="MathJax-Element-510">\mathbb{U}</script> of keys to range <script type="math/tex" id="MathJax-Element-511">\{0,1,...,m-1\}</script>. Such a collection is said to be <strong>universal</strong> if for each pair of distinct keys <script type="math/tex" id="MathJax-Element-512">k, l \in \mathbb{U}</script>, the # of hash functions <script type="math/tex" id="MathJax-Element-513">h \in \mathbb{H}</script> for <script type="math/tex" id="MathJax-Element-514">h(k) = h(l)</script> is at most <script type="math/tex" id="MathJax-Element-515">| \mathbb{H} |/m</script>. At most <script type="math/tex" id="MathJax-Element-516">1/m</script> probability of collision given random choosing.</p>
+
+<p>Family of universal hash functions.</p>
+
+<p><script type="math/tex" id="MathJax-Element-517">\mathbb{H_{pm}} = \{ h_{ab}: a \in \mathbb{Z}_p^* \ and\ b \in \mathbb{Z}_p \}</script> <br>
+where <script type="math/tex" id="MathJax-Element-518">h_{ab} (k) = ((ak + b)\ mod\ p) mod\ m</script></p>
+
+<p><script type="math/tex" id="MathJax-Element-519">m</script> is the size of the hashtable and <script type="math/tex" id="MathJax-Element-520">p</script> is a prime where <script type="math/tex" id="MathJax-Element-521">p</script> is greater than the universe of keys and <script type="math/tex" id="MathJax-Element-522">m</script>.</p>
+
+
+
+<h2 id="open-addressing">Open Addressing</h2>
+
+<p>All elements occupy the hash table. Each bucket contains at most one element. No list or other data structures. Can fill up. Can deterministically calculate sequence of buckets to be examined. </p>
+
+<p>Successively probe the hash table until we find open slot. Order depends on key.</p>
+
+<p>Search similar.</p>
+
+<p>Delete, use something different than null to specify it was deleted.</p>
+
+
+
+<h3 id="linear-probing">Linear Probing</h3>
+
+<p>Use auxiliary hash function <script type="math/tex" id="MathJax-Element-523">h'</script> so <script type="math/tex" id="MathJax-Element-524">h(k, i) = (h'(k) + i) mod\ m</script> for <script type="math/tex" id="MathJax-Element-525">i = 0, 1, ..., m - 1</script> (Just probe linearly).  <br>
+Suffers from <strong>primary clustering</strong>. Long runs of occupied slots can build up.</p>
+
+
+
+<h3 id="quadratic-probing">Quadratic probing</h3>
+
+<p><strong>Quadratic probing</strong> uses a hash function of the form.</p>
+
+<p><script type="math/tex" id="MathJax-Element-526">h(k,i) = (h'(k) + c_1i + c_2i^2)\ mod\ m</script> <br>
++ values of <script type="math/tex" id="MathJax-Element-527">c_1</script> and <script type="math/tex" id="MathJax-Element-528">c_2</script> are constrained <br>
+<strong>secondary clustering</strong> only <script type="math/tex" id="MathJax-Element-529">m</script> distinct sequences.</p>
+
+
+
+<h3 id="double-hashing">Double Hashing</h3>
+
+<p><script type="math/tex" id="MathJax-Element-530">h(k,i) = (h_1(k) + i h_2(k)) mod\ m</script> <br>
+<script type="math/tex" id="MathJax-Element-531">h_2(k)</script> must be relatively prime to the hash-table size <script type="math/tex" id="MathJax-Element-532">m</script>.</p>
+
+<ul>
+<li>let <script type="math/tex" id="MathJax-Element-533">m</script> be a power of 2, and design <script type="math/tex" id="MathJax-Element-534">h_2</script> so it always produce an odd</li>
+<li>Make <script type="math/tex" id="MathJax-Element-535">m</script> prime and let <script type="math/tex" id="MathJax-Element-536">h_2</script> produce a number less than <script type="math/tex" id="MathJax-Element-537">m</script></li>
+</ul>
+
+<p><script type="math/tex" id="MathJax-Element-538">\Theta(m^2)</script>  possible sequences</p>
+
+
+
+<h2 id="perfect-hashing">Perfect Hashing</h2>
+
+<p>Can provide excellent worst-case performance when set of keys is static: once the keys are stored in the table, the set of keys never changes.</p>
+
+<p><script type="math/tex" id="MathJax-Element-539">O(1)</script> memory access are required to perform a search in the worst case.</p>
+
+<p>Two levels of hashing, with universal hashing at each  level.</p>
+
+<p>Similar to chaining but use hash table at the second level instead of linked list. <br>
+Can guarantee that there are no collisions at the secondary level. Takes <script type="math/tex" id="MathJax-Element-540">O(n)</script> memory.</p></div></body>
+</html>

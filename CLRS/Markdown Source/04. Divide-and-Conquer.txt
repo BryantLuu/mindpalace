@@ -1,0 +1,241 @@
+#Divide-and-Conquer
+
+##Definitions
++ **_Three Steps_**
+ + **Divide**: Split problem into a number of sub-problems
+ + **Conquer**: Solve the problems either recursively or in a straightforward manner
+ + **Combine**: Combine the solutions to the sub-problems
++ **_Recursive Case_**: When sub-problems are large enough to be solved recursively
++ **_Base Case_**: Small enough to solve directly
+
+##Recurrences
+**_Recurrences_**: an equation/inequality that describes a function in terms of its value on smaller inputs (ex. Fibonacci)
+
++ Three methods for solving recurrences
+	+ **Substitution**: Guess a bound and then use induction to prove
+	+ **Recursion-tree**: Converts recurrence into a tree whose nodes represent the costs incurred at various levels of recursion. Use techniques for bounding summations
+	+ **Master Method**: for bounds of the form: $T(n) = a T(n/b) + f(n) | a \ge 1, b > 1$
+		+ For cases where recursion creates $a$ sub-problems each $1/b$ fraction of the original with the divide and combine step taking $f(n)$ time combined.
+
+##Maximum-subarray Problem
+Given sequence of numbers $c_0...c_n$, find the sub-sequence $c_i...c_j$ that has that maximum sum.
+
+###Naive Solution
+$\Theta(n^2)$ since need to check every start/end index. The computation of the sub-arrays can be organized so each sub-array sum takes $O(1)$.
+
+```java
+/**
+ * Computes the sum of the maximum sub-array
+ * Need to keep index of i,j to find the maximum  sub-sequence
+ * @param A array of doubles to find maximum
+ * @return max sum of maximum sub-array
+ */
+public static int naiveMaxSum(double[] A)
+{
+	double max = 0;
+	for (int i = 0; i < A.length; i++) {
+		double prevSum = 0;
+		for (int j = i; j < A.length; j++) {
+				prevSum += A[j];
+				if (prevSum > max)
+					max = prevSum;
+		}
+	}
+	return max;
+}
+```
+
+###Divide-and-conquer
+
+**Intuition**
+
++ Divide array into two subarrays $A[i...j], A[j + 1... k]$
++ any subarray must lie in
+	1. $A[i..j]$
+	2. $A[j + 1..k]$
+	3. Or crossing midpoint $j$.
+
+Trick is to use step $3$ as the combine step.
+
+```java
+public class Subarray
+{
+	int low;
+	int high;
+	double sum;
+	
+	public Subarray(int _low, int _high, double _sum)
+	{
+		low = _low;
+		high = _high;
+		sum = _sum;
+	}
+}
+
+public static Subarray findMaxCrossingSubArray( double A[], int low, int mid, int high) {
+	double leftSum = Double.MIN_VALUE;
+	double sum = 0;
+	double maxLeft;
+	
+	for (int i = mid; i >= low; i--) {
+		sum += A[i];
+		if (sum > leftSum) {
+			leftSum = sum;
+			maxLeft = i;
+		}
+	}
+	
+	double rightSum = Double.MIN_VALUE;
+	double maxRight;
+	sum = 0;
+	
+	for (int i = mid; i <= high; i++) {
+		sum += A[i];
+		if (sum > rightSum) {
+			rightSum = sum;
+			maxRight = i;
+		}
+	}
+	
+	return new Subarray(maxLeft, maxRight, leftSum + rightSum);
+}
+```
+Above takes $\Theta(n)$ time
+
+```java
+public static Subarray findMaximumSubarray(double[] A, int low, int high)
+{
+	if (low == high)
+		return new Subarray(low, high, A[low]);
+	
+	int mid = (low + high)/2;
+	Subarray left = findMaximumSubarray(A, low, mid);
+	Subarray right = findMaximumSubarray(A, mid + 1, high);
+	Subarray cross = findMaxCrossingSubArray(A, low, mid, high);
+
+	if (left.sum >= right.sum && left.sum >= cross.sum)
+		return left;
+	else if (right.sum >= left.sum && right.sum >= cross.sum)
+		return right;
+	else
+		return cross;
+}
+```
+
+##Strassen's Alg for Matrix Multiplication
+
+Given $A, B, C \in \mathbb{R}^{n x n}$ where $C = A \times B$
+
+$c_{ij} = \sum_{k = 1}^n a_{ik} \times b_{kj}$.
+
+Naive way takes $\Theta(n^3)$.
+
+```java
+public double[][] squareMatrixMult(double[][] A, double[][] B)
+{
+	int n = A.length;
+	double[][] C = new double[n][n];
+	
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++)
+			for (int k = 0; k < n; k++)
+				C[i][j] += A[i][k] * B[k][j];
+	return C;
+}
+```
+
+
+Strassen Alg runs in $\Theta(n^{lg(7)})$ time!.
+$A = \begin{pmatrix}
+		A_{11} & A_{12} \\\
+		A_{21} & A_{22}
+		\end{pmatrix},
+B = \begin{pmatrix}
+		B_{11} & B_{12} \\\
+		B_{21} & B_{22}
+		\end{pmatrix}, 
+C = \begin{pmatrix}
+		C_{11} & C_{12} \\\
+		C_{21} & C_{22}
+		\end{pmatrix}$
+		
+$C_{11} = A_{11} \cdot B_{11} + A_{12} \cdot B_{21}$
+$C_{12} = A_{11} \cdot B_{13} + A_{12} \cdot B_{22}$
+$C_{21} = A_{21} \cdot B_{11} + A_{22} \cdot B_{21}$
+$C_{22} = A_{21} \cdot B_{12} + A_{22} \cdot B_{22}$
+
+**WILL TAKE WAY TO LONG TO IMPLEMENT**
+```java
+public class Subarray
+{
+	int topLeft;
+	int topRight;
+	int botLeft;
+	int botRight;
+	
+	public Subarray(int _topLeft, int _topRight, int _botLeft, int _botRight)
+	{
+		topLeft = _topLeft;
+		topRight = _topRight;
+		botLeft = _botLeft;
+		botRight = _botRight;
+	}
+	
+	public int size()
+	{
+		return topLeft - topRight;
+	}
+}
+
+public static Subarray[][] splitMatrix(Subarray sa)
+{
+	Subarray[][] t = new Subarray[2][2];
+	int n = sa.size();
+	int 
+
+}
+
+public static double[][] squareMatrixMultRecursive(double[][] A, double[][] B, Subarray t1, Subarray t2)
+{
+	int n = t1.size();
+	double[][] C = new double[n][n];
+	
+	if (n == 1) {
+		C[0][0] = A[0][0] * B[0][0];
+	} else {
+		double[][] C11 = squareMatrixMultRecursive(A11, B11) + squareMatrixMultRecursive(A12, B21);
+		double[][] C12 =squareMatrixMultRecursive(A11, B12) + squareMatrixMultRecursive(A12, B22);
+		double[][] C21 = squareMatrixMultRecursive(A21, B11) + squareMatrixMultRecursive(A22, B21);
+		double[][] C22 = squareMatrixMultRecursive(A21, B12) + squareMatrixMultRecursive(A22, B22);
+
+	return C;
+}
+```
+
+Still $\Theta(O^3)$.
+
+Strassen's method creates 10 matrices, and computes 7 matrix products instead of 8.
+
+$S_1 = B_{12} - B_{22}$
+$S_2 = A_{11} + A_{12}$
+$S_3 = A_{21} + A_{22}$
+$S_4 = B_{21} - B_{11}$
+$S_5 = A_{11} + A_{22}$
+$S_6 = B_{12} + B_{22}$
+$S_7 = A_{12} - A_{22}$
+$S_8 = B_{21} + B_{22}$
+$S_9 = A_{11} - A_{21}$
+$S_{10} = B_{11} + B_{12}$
+
+$P_1 = A_{11} \cdot S_1$
+$P_2 = S_2 \cdot B_{22}$
+$P_3 = S_3 \cdot B_{11}$
+$P_4 = A_{22} \cdot S_{4}$
+$P_5 = S_5 \cdot S_{6}$
+$P_6 = S_7 \cdot S_{8}$
+$P_7 = S_9 \cdot S_{10}$
+
+$C_{11} = P_5 + P_4 - P_2 + P_6$
+$C_{12} = P_1 + P_2$
+$C_{21} = P_3 + P_4$
+$C_{22} = P_5 + P_1 - P_3 - P_7$

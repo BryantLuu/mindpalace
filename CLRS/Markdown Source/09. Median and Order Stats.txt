@@ -1,0 +1,50 @@
+$ith$ **order statistic** of $n$ elements: $ith$ smallest element
+
+# Min/Max
+
+Individually takes $\Theta(n)$ time with $2n-2$ comparisons.
+
+## Simultaneous min/max
+
+Must find both the minimum/maximum of a set. $\Theta(n)$. Can reduce the computational load by comparing pairs of elements.
+
++ Compare the pairs to themselves
++ Compare max of pairs to current max
++ Compare min of pairs to current min
+
+Takes 3 comparisons instead of 4.
+
+## Selection in expected linear time
+
+Can run in $\Theta(n)$ time. 
+
+```java
+public double randomizedSelect( double[] A, int p, int r, int i) {
+	if (p == r) {
+		return A[p];
+	}
+
+	q = randomizedPartition(A, p, r);
+	k = q - p + 1;
+	
+	if (i == k) {
+		return A[q];
+	} else if (i < k) {
+		return randomizedSelect(A, p, q - 1, i);
+	} else {
+		return randomizedSelect(A, q + 1, r, i - k);
+	}
+}
+```
+
+Worst case is $\Theta(n^2)$, expect time is $\Theta(n)$.
+
+##Selection in worst-case linear time.
+
+Can guarantee a good partition.
+
+1. Divide $n$ elements of the input array into $Floor(n/5)$ groups of 5 elements each.
+2. Find the median of each groups by insertion sort.
+3. Use SELECT recursively to find the median of medians. 
+4. Partition the array around the median-of-medians $x$, if $x$ is kth element then return.
+5. Otherwise perform recursively.

@@ -1,0 +1,103 @@
+Guarantee $O(lg\ n)$ worst case.
+
+#Properties
+
++ has extra field for color
++ Guarantees that no node path is more than twice as long as the shortest.
+
+RB- Properties
+
++ Each node is red or black
++ The root is black
++ Each leaf is black (nil node)
++ If a node is red, then children are black
++ For each node, all simple paths to descendant leaves contain the same number of black nodes
+
+\# of black nodes from (not including) node $x$ to descent leaves is **black-height**
+
+**Height Property**
+A red-black tree with n internal nodes has height at most $2lg(n + 1)$
+
+Proof: Lower bound number of nodes given a **black-height**. Given height, lower bound **black-height**
+
+#Rotations
+
+Need to preserve RB property when doing insertion/deletions
+
+#Left Rotation
+Left rotation on node $x$
+Assume that $x.right = y != null$
+
+$y$ becomes root of subtree, $y.left = x$, $x.right = y.left$
+
+```java
+public void leftRotate(RBNode x) {
+	Node y = x.right;
+	if (y != null) {
+		x.right = y.left;
+		if (x.right != null) {
+			x.right.p = x;
+		}
+		y.p = x.p;
+		x.p = y;
+		y.left = x;
+		if (y.p == null) {
+			root = y;
+		}
+	}
+}
+```
+
+#Insertion
+
+Insertion runs in $O(lg\ n)$ time.
+
+Red-black insert: Like tree-insert, but need to fix up coloring. Inserted node is red.
+
+```java
+public void insertRB(RBTree T, RBNode z) {
+	RBNode y = T.null;
+	RBNode x = T.root;
+	
+	while (x != T.null) {
+		y = x;
+		if (z.key < x.key) {
+			x = x.left;
+		} else {
+			x = x.right;
+		}
+	}
+	
+	z.p = y;
+
+	if (y == T.null) {
+		T.root = z;
+	} else if (z.key < y.key) {
+		y.left = z;
+	} else {
+		y.right = z;
+	}
+
+	z.left = T.null;
+	z.right = T.null;
+	z.color = RED;
+	
+	rbInsertFixup(T, z);
+}
+```
+
+Possible violations: Root black, Red parent.
+
+```java
+public void rbInsertFixup(RBTree T,  Node z) {
+	while (z.parent.color == RED) {
+	}
+
+	T.root.color = BLACK;
+}
+```
+
+Basically fixes bottom up. $O(lg(n))$
+
+#Delete
+Same thing basically.
